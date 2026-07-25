@@ -40,7 +40,9 @@ export default function App() {
       iconActive = 0;
       iconLabel = "Back to list";
       onIconClick = () => go(`#/c/${route.subId}`);
-      view = <ItemDetail subId={route.subId} itemId={route.itemId} color={pageColor} />;
+      view = (
+        <ItemDetail key={route.itemId} subId={route.subId} itemId={route.itemId} color={pageColor} />
+      );
       break;
     }
     case "soon":
