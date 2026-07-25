@@ -1,4 +1,4 @@
-import { useHashRoute } from "./hooks/useHashRoute.js";
+import { useHashRoute, go } from "./hooks/useHashRoute.js";
 import { findSubcategory } from "./data.js";
 import Appbar from "./components/Appbar.jsx";
 import Landing from "./components/Landing.jsx";
@@ -20,7 +20,9 @@ export default function App() {
 
   let title = "SPACE SCOUTS";
   let pageColor; // single source of truth — flows to both the appbar and the page body
-  let star = false;
+  let iconActive = 2;
+  let iconLabel = "Home";
+  let onIconClick;
   let view;
 
   switch (route.view) {
@@ -35,7 +37,9 @@ export default function App() {
       const found = findSubcategory(route.subId);
       title = found ? found.sub.label : route.subId;
       pageColor = found ? found.sub.color : "pink";
-      star = true;
+      iconActive = 0;
+      iconLabel = "Back to list";
+      onIconClick = () => go(`#/c/${route.subId}`);
       view = <ItemDetail subId={route.subId} itemId={route.itemId} color={pageColor} />;
       break;
     }
@@ -48,7 +52,13 @@ export default function App() {
   return (
     <div className="phone">
       <img className="sparkles" src="/images/sparkle.png" alt="" aria-hidden="true" />
-      <Appbar title={title} color={pageColor} star={star} />
+      <Appbar
+        title={title}
+        color={pageColor}
+        iconActive={iconActive}
+        iconLabel={iconLabel}
+        onIconClick={onIconClick}
+      />
       <main id="app">{view}</main>
     </div>
   );
