@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { DATA } from "../data.js";
-import Tile from "./Tile.jsx";
+import Carousel from "./Carousel.jsx";
 import ThemedSurface from "./ThemedSurface.jsx";
 
 export default function ItemDetail({ subId, itemId, color }) {
   const items = DATA.items[subId] || [];
   const item = items.find((i) => i.id === itemId);
+  const [selected, setSelected] = useState(item?.options?.[0]);
 
   if (!item) {
     return (
@@ -14,12 +16,19 @@ export default function ItemDetail({ subId, itemId, color }) {
     );
   }
 
-  const paragraphs = Array.isArray(item.desc) ? item.desc : [item.desc];
+  const paragraphs = Array.isArray(item.desc)
+    ? item.desc
+    : item.desc
+      ? [item.desc]
+      : [];
+  const rawImages = item.images?.[selected] ?? item.image;
+  const images = Array.isArray(rawImages) ? rawImages : rawImages ? [rawImages] : [];
+  const alt = selected ? `${item.name} – ${selected}` : item.name;
 
   return (
     <section className="detail">
       <div className="detail__image">
-        <Tile src={item.image} alt={item.name} />
+        <Carousel key={selected} images={images} alt={alt} />
       </div>
 
       <ThemedSurface color={color} className="panel panel--themed">
@@ -27,9 +36,15 @@ export default function ItemDetail({ subId, itemId, color }) {
         <div className="panel__label">OPTIONS</div>
         <div className="chips">
           {item.options.map((o) => (
-            <span key={o} className="chip">
+            <button
+              key={o}
+              type="button"
+              className={`chip${o === selected ? " chip--selected" : ""}`}
+              aria-pressed={o === selected}
+              onClick={() => setSelected(o)}
+            >
               {o}
-            </span>
+            </button>
           ))}
         </div>
         <p className="panel__meta">{item.meta}</p>
