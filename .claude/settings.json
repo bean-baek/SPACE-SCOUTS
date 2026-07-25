@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node ss_check5.js)",
+      "Bash(curl -s http://localhost:5180/src/styles.css)",
+      "Bash(node ss_nav.js)",
+      "Bash(gh auth *)",
+      "Bash(npm run *)",
+      "Bash(dig +short NS spacescouts.store)",
+      "Bash(dig +short A spacescouts.store)",
+      "Bash(dig +short www.spacescouts.store)",
+      "Bash(whois spacescouts.store)"
+    ]
+  }
+}

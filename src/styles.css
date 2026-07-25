@@ -1,0 +1,422 @@
+:root {
+  --ink: #3a39ff; /* titles, headings, outlines */
+  --pink: #ffb0d3; /* STANDARD REWARD theme */
+  --blue: #80cfff; /* COCKTAIL REWARD theme */
+  --yellow: #ffffab; /* EARLY-BIRD REWARD theme */
+  --lime: #cbff88; /* LUCKY DRAW theme + outer backdrop behind the phone frame */
+  --khaki: #bfbca9; /* CAPSULE DRAW theme — estimated from the reference, adjust if off */
+  --grey: #e5e5e5; /* app surface background */
+
+  --paper: #ffffff;
+
+  --radius: 22px;
+  --radius-sm: 14px;
+  --outline: 3px solid var(--ink);
+  --shadow: 0 6px 14px rgba(58, 57, 255, 0.12);
+  --maxw: 440px;
+  --pad: 18px;
+  --font-round: "Albert Sans";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-round);
+  color: var(--ink);
+  background: var(--lime);
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+}
+
+#root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Phone frame — full width on mobile, centered card on desktop.
+   height + overflow-y:auto (instead of min-height + overflow:hidden) makes
+   .phone its own scroll container, which is required for the sticky
+   appbar inside it to actually stick. The transform makes .phone the
+   containing block for position:fixed children (the FAB), so it stays
+   pinned to the phone's own bottom edge instead of the browser window's. */
+.phone {
+  position: relative;
+  width: 100%;
+  max-width: var(--maxw);
+  height: 100dvh;
+  background: var(--grey);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transform: translateZ(0);
+}
+@media (min-width: 480px) {
+  .phone {
+    margin: 24px 0;
+    border-radius: 40px;
+    box-shadow: 0 20px 50px rgba(58, 57, 255, 0.22);
+  }
+}
+
+/* Sparkles — scattered across the whole surface, behind content */
+.sparkles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---------- Appbar ---------- */
+.appbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: calc(env(safe-area-inset-top) + 14px) var(--pad) 12px;
+  background: transparent;
+}
+.appbar.theme-pink {
+  background: var(--pink);
+}
+.appbar.theme-blue {
+  background: var(--blue);
+}
+.appbar.theme-yellow {
+  background: var(--yellow);
+}
+.appbar.theme-lime {
+  background: var(--lime);
+}
+.appbar.theme-khaki {
+  background: var(--khaki);
+}
+/* Overlay variant: floats transparently over the landing photo instead of
+   sitting in normal flow. Same padding/font-size as the default appbar —
+   that's the whole point, so the bar never changes size between screens. */
+.appbar.appbar--overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  background: transparent;
+}
+
+.appbar__title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+/* Shared toggle icon (appbar home button + landing header icon) */
+.toggle-icon {
+  border: none;
+  background: none;
+  padding: 2px;
+  cursor: pointer;
+  line-height: 0;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+.toggle-icon img {
+  width: 100%;
+  display: block;
+}
+.toggle-icon:hover {
+  transform: scale(1.1);
+}
+.toggle-icon:active {
+  transform: scale(0.95);
+}
+
+/* Shared main area */
+#app {
+  flex: 1;
+  min-height: 0;
+  padding: 4px var(--pad) calc(env(safe-area-inset-bottom) + 28px);
+  position: relative;
+  z-index: 2;
+}
+
+/* ---------- Landing (full-bleed photo, header overlaid on top) ---------- */
+.landing {
+  position: relative;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
+.landing__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+.hero__logo {
+  position: absolute;
+  bottom: 0%;
+  width: 100%;
+  z-index: 2;
+  animation: spin 2s linear infinite;
+  filter: drop-shadow(0 2px 0 rgba(58, 57, 255, 0.15));
+}
+.hero__mascot {
+  position: absolute;
+  right: 5%;
+  bottom: 38%;
+  width: 22%;
+  max-width: 92px;
+  z-index: 2;
+  animation: mascot-spin 5s linear infinite;
+}
+
+@keyframes mascot-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Menu (flat, borderless) ---------- */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  padding-top: 8px;
+}
+.menu__category {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.menu__heading {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: right;
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 2.25rem;
+  color: var(--ink);
+  padding: 0;
+  cursor: pointer;
+}
+.menu__subs {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.menu__sub {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: right;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 1.5rem;
+  color: var(--ink);
+  padding: 0;
+  cursor: pointer;
+}
+.menu__heading:active,
+.menu__sub:active {
+  opacity: 0.6;
+}
+
+/* ---------- Grid view ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding-top: 4px;
+}
+.grid__tile {
+  aspect-ratio: 1 / 1;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--grey);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+.grid__tile:active {
+  transform: translateY(2px);
+}
+.grid__tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholder-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #9a9a9a;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Floating action button — always brand pink, home shortcut */
+.fab {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom) + 24px);
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: none;
+  background: var(--pink);
+  color: var(--ink);
+  font-weight: 900;
+  font-size: 1.2rem;
+  box-shadow: 0 6px 16px rgba(58, 57, 255, 0.25);
+  cursor: pointer;
+  z-index: 6;
+}
+.fab:active {
+  transform: translateX(-50%) translateY(2px);
+}
+
+/* ---------- Detail view ---------- */
+/* Flex column so the panel below can stretch and fully cover the rest of
+   the screen instead of stopping wherever its text content ends. */
+.detail {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+.detail__image {
+  aspect-ratio: 1 / 1;
+  background: var(--grey);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+.detail__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Full-bleed themed panel — breaks out of #app's side padding and grows
+   to fill any remaining space so its color always reaches the bottom of
+   the screen (and keeps going if the content needs to scroll). */
+.panel--themed {
+  flex: 1;
+  margin: 0 calc(-1 * var(--pad))
+    calc(-1 * (env(safe-area-inset-bottom) + 28px));
+  padding: 22px var(--pad) calc(env(safe-area-inset-bottom) + 28px);
+}
+.theme-pink.panel--themed {
+  background: var(--pink);
+}
+.theme-blue.panel--themed {
+  background: var(--blue);
+}
+.theme-yellow.panel--themed {
+  background: var(--yellow);
+}
+.theme-lime.panel--themed {
+  background: var(--lime);
+}
+.theme-khaki.panel--themed {
+  background: var(--khaki);
+}
+
+.panel__title {
+  margin: 25px 0;
+  font-size: 2.3rem;
+  font-weight: 900;
+  color: var(--ink);
+}
+.panel__meta {
+  margin: 30px 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4a4a6a;
+}
+.panel__label {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.chip {
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 5px 15px;
+}
+.panel__desc {
+  margin: 0 0 14px;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #2c2c50;
+}
+.panel__desc:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Soon ---------- */
+.soon {
+  text-align: center;
+  padding: 60px 10px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.soon__mascot {
+  width: 100px;
+  margin-bottom: 14px;
+}
+
+.empty {
+  text-align: center;
+  color: #6b7250;
+  font-weight: 700;
+}
