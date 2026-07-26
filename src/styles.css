@@ -387,13 +387,14 @@ body {
 
 /* Front/back photo slider inside the detail image tile */
 .carousel {
-  display: flex;
   width: 100%;
   height: 100%;
+  display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  flex-shrink: 0;
 }
 .carousel::-webkit-scrollbar {
   display: none;
@@ -406,6 +407,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.carousel__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
 }
 .carousel__dots {
   position: absolute;
