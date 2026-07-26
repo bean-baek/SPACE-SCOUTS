@@ -1,0 +1,159 @@
+/* Dodge mini-game — fully scoped.
+   Every selector is nested under .dg-root and every class carries a dg- prefix,
+   so nothing here can reach the rest of the site. Colours are declared locally
+   rather than reusing the site's tokens: the game must stand on its own. */
+
+.dg-root {
+  --dg-bg: #3a39ff;
+  --dg-accent: #cbff88;
+  --dg-paper: #ffffff;
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--dg-bg);
+  font-family: "Albert Sans", sans-serif;
+  color: var(--dg-paper);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* touch-action:none is load-bearing — without it, dragging the player scrolls
+   the phone frame instead of moving the ship. */
+.dg-root .dg-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* ---------- HUD ---------- */
+
+.dg-root .dg-hud {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  pointer-events: none;
+}
+
+.dg-root .dg-hud__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* tabular-nums stops the timer from twitching as digit widths change */
+.dg-root .dg-hud__time {
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--dg-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.dg-root .dg-hud--boss .dg-hud__label {
+  color: var(--dg-accent);
+}
+
+/* ---------- overlays (start / result) ---------- */
+
+.dg-root .dg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 26px;
+  text-align: center;
+  background: rgba(16, 15, 96, 0.74);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.dg-root .dg-board {
+  width: 116px;
+  max-width: 45%;
+  height: auto;
+  margin-bottom: 2px;
+}
+
+.dg-root .dg-title {
+  margin: 0;
+  font-size: 1.85rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+}
+
+.dg-root .dg-title--clear {
+  color: var(--dg-accent);
+}
+
+.dg-root .dg-score {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  font-variant-numeric: tabular-nums;
+}
+
+.dg-root .dg-score b {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--dg-accent);
+}
+
+.dg-root .dg-hint {
+  margin: 0;
+  max-width: 260px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.dg-root .dg-btn {
+  margin-top: 6px;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 999px;
+  background: var(--dg-accent);
+  color: var(--dg-bg);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.dg-root .dg-btn:active {
+  transform: scale(0.96);
+}
+
+.dg-root .dg-error {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffd5e4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dg-root .dg-btn {
+    transition: none;
+  }
+}

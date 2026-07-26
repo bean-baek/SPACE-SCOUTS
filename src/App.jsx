@@ -6,6 +6,7 @@ import Menu from "./components/Menu.jsx";
 import RewardGrid from "./components/RewardGrid.jsx";
 import ItemDetail from "./components/ItemDetail.jsx";
 import Soon from "./components/Soon.jsx";
+import DodgeGame from "./components/DodgeGame.jsx";
 
 export default function App() {
   const route = useHashRoute();
@@ -64,6 +65,10 @@ export default function App() {
           color={pageColor}
         />
       );
+      break;
+    case "game":
+      title = "";
+      view = <DodgeGame />;
       break;
     case "soon":
     default:

@@ -12,6 +12,7 @@ function parse(hash) {
       itemId: parts[2],
       option: parts[3] ? decodeURIComponent(parts[3]) : undefined,
     };
+  if (parts[0] === "game") return { view: "game" };
   if (parts[0] === "soon") return { view: "soon" };
   return { view: "landing" };
 }
