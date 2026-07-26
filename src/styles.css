@@ -365,7 +365,7 @@ body {
   min-height: 100%;
 }
 /* Square photo stage with responsive padding for consistent layout.
-   Uses clamp() to scale padding responsively: min 20px, preferred 8%, max 50px. */
+   Uses clamp() to scale padding responsively: min 30px, preferred 12%, max 70px. */
 .detail__image {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -374,7 +374,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: clamp(20px, 8%, 50px);
+  padding: clamp(30px, 12%, 70px);
   overflow: hidden;
 }
 .detail__image img {
