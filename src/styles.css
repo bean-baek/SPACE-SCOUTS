@@ -183,48 +183,67 @@ body {
   z-index: 2;
 }
 
-/* ---------- Landing (wordmark band on top, photo filling the rest) ---------- */
-/* Column flow so the photo below takes exactly the height the appbar leaves
-   over. That keeps the band above it self-correcting — if the wordmark ever
-   wraps on a very narrow screen the bar grows and the photo simply starts
-   lower, instead of being overlapped by a hard-coded offset. */
+/* ---------- Landing (appbar on top, photo fills remaining space) ---------- */
 .landing {
   position: relative;
-  /* Fills the phone frame rather than re-deriving the viewport height, so the
-     hero can't desync from .phone (which is margin-offset on desktop). */
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
-/* Hero photo. The artwork is authored at 402x791 (the iPhone 16/17 canvas),
-   so at the target ratio it fills its slot with only a few px trimmed off the
-   sides. `flex: 1` + `min-height: 0` lets it absorb the leftover height at any
-   aspect ratio, and anchoring object-position to the top keeps RYO's face in
-   frame — the sacrificial edge is the bottom, which sits behind .hero__logo
-   anyway. Note this replaces a `padding-top` inset: padding on a replaced
-   element shrinks the content box object-fit resolves against, so the crop
-   drifted per aspect ratio while the gap scaled off the width instead. */
+/* Photo takes remaining height after appbar and fills without gaps */
 .landing__photo {
   flex: 1;
-  min-height: 0;
+  height: 100%;
   width: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center center;
   display: block;
 }
-.hero__logo {
+
+.landing__logo {
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
   height: auto;
   z-index: 2;
   filter: drop-shadow(0 2px 0 rgba(58, 57, 255, 0.15));
-  object-fit: contain;
-  object-position: bottom center;
 }
+.landing__star {
+  top: 15%;
+  left: 50%;
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  color: #cbff88;
+  cursor: pointer;
+  z-index: 3;
+  transition: transform 0.2s ease-out;
+  user-select: none;
+  transform-origin: center;
+}
+
+.landing__star:nth-of-type(3) {
+  top: 8%;
+  left: 18%;
+}
+.landing__star:nth-of-type(4) {
+  top: 8%;
+  right: 18%;
+}
+.landing__star.active {
+  animation: scaleUp 1s linear forwards;
+}
+
+@keyframes scaleUp {
+  to {
+    transform: scale(1.5);
+  }
+}
+
 .hero__mascot {
   position: absolute;
   right: 5%;
