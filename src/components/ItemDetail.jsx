@@ -3,10 +3,21 @@ import { DATA } from "../data.js";
 import Carousel from "./Carousel.jsx";
 import ThemedSurface from "./ThemedSurface.jsx";
 
-export default function ItemDetail({ subId, itemId, color }) {
+// Picks a chip-row width that divides the option count evenly (3 columns for
+// 3 or 6 options, 2 columns for 2 or 4), so rows fill up instead of leaving a
+// lone chip dangling on the last row. Falls back to 3 when neither fits.
+function chipColumns(count) {
+  if (count % 3 === 0) return 3;
+  if (count % 2 === 0) return 2;
+  return 3;
+}
+
+export default function ItemDetail({ subId, itemId, option, color }) {
   const items = DATA.items[subId] || [];
   const item = items.find((i) => i.id === itemId);
-  const [selected, setSelected] = useState(item?.options?.[0]);
+  const [selected, setSelected] = useState(
+    item?.options?.includes(option) ? option : item?.options?.[0]
+  );
 
   if (!item) {
     return (
@@ -34,7 +45,10 @@ export default function ItemDetail({ subId, itemId, color }) {
       <ThemedSurface color={color} className="panel panel--themed">
         <h2 className="panel__title">{item.name}</h2>
         <div className="panel__label">OPTIONS</div>
-        <div className="chips">
+        <div
+          className="chips"
+          style={{ "--chip-cols": chipColumns(item.options.length) }}
+        >
           {item.options.map((o) => (
             <button
               key={o}
