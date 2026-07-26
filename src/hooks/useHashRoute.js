@@ -5,7 +5,13 @@ function parse(hash) {
   if (parts.length === 0) return { view: "landing" };
   if (parts[0] === "menu") return { view: "menu" };
   if (parts[0] === "c" && parts[1]) return { view: "grid", subId: parts[1] };
-  if (parts[0] === "i" && parts[1] && parts[2]) return { view: "detail", subId: parts[1], itemId: parts[2] };
+  if (parts[0] === "i" && parts[1] && parts[2])
+    return {
+      view: "detail",
+      subId: parts[1],
+      itemId: parts[2],
+      option: parts[3] ? decodeURIComponent(parts[3]) : undefined,
+    };
   if (parts[0] === "soon") return { view: "soon" };
   return { view: "landing" };
 }

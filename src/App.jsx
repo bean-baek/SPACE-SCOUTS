@@ -41,7 +41,13 @@ export default function App() {
       iconLabel = "Back to list";
       onIconClick = () => go(`#/c/${route.subId}`);
       view = (
-        <ItemDetail key={route.itemId} subId={route.subId} itemId={route.itemId} color={pageColor} />
+        <ItemDetail
+          key={route.itemId}
+          subId={route.subId}
+          itemId={route.itemId}
+          option={route.option}
+          color={pageColor}
+        />
       );
       break;
     }
