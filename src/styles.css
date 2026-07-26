@@ -16,10 +16,31 @@
   --maxw: 440px;
   --pad: 18px;
   --font-round: "Albert Sans", sans-serif;
+
+  /* Appbar metrics. Height is derived, not guessed: vertical padding twice
+     over, plus 34px for the tallest child (the 30px toggle icon + its 2px
+     padding), plus the notch inset. Deriving it means the landing hero below
+     stays glued to the bar even if this padding is retuned. */
+  --appbar-pad-y: 20px;
+  --appbar-h: calc(env(safe-area-inset-top) + (var(--appbar-pad-y) * 2) + 34px);
+
+  /* How far the landing photo starts below the top of the phone frame. The
+     band it leaves is what the SPACE SCOUTS wordmark reads against, so the
+     photo begins where the appbar ends. Raise/lower this one value to give
+     the wordmark more or less room. */
+  --hero-inset: var(--appbar-h);
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Responsive safety net: an image can never force its container wider than
+   the phone frame, whatever its intrinsic size. Elements that deliberately
+   drive their own box (the hero, tiles, sparkles) set sizing via their own
+   class, which outranks this. */
+img {
+  max-width: 100%;
 }
 
 html,
@@ -111,18 +132,6 @@ body {
 .appbar.theme-khaki {
   background: var(--khaki);
 }
-/* Overlay variant: floats transparently over the landing photo instead of
-   sitting in normal flow. Same padding/font-size as the default appbar —
-   that's the whole point, so the bar never changes size between screens. */
-.appbar.appbar--overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 3;
-  background: transparent;
-}
-
 .appbar__title {
   margin: 0;
   font-size: 1.75rem;
@@ -132,10 +141,15 @@ body {
   color: var(--ink);
 }
 /* Landing's title stays bold — every other appbar (grid/detail pages) uses
-   the lighter weight above. */
-.appbar--overlay .appbar__title {
+   the lighter weight above. Scoped by the landing section rather than a
+   modifier class, since the bar now sits in that section's flow. */
+.landing .appbar__title {
   font-size: 2rem;
   letter-spacing: 0.04em;
+  font-weight: 900;
+}
+/* Grid page titles are also bold */
+.appbar__title--bold {
   font-weight: 900;
 }
 /* Shared toggle icon (appbar home button + landing header icon) */
@@ -168,26 +182,42 @@ body {
   z-index: 2;
 }
 
-/* ---------- Landing (full-bleed photo, header overlaid on top) ---------- */
+/* ---------- Landing (wordmark band on top, photo filling the rest) ---------- */
+/* Column flow so the photo below takes exactly the height the appbar leaves
+   over. That keeps the band above it self-correcting — if the wordmark ever
+   wraps on a very narrow screen the bar grows and the photo simply starts
+   lower, instead of being overlapped by a hard-coded offset. */
 .landing {
   position: relative;
-  height: 100dvh;
+  /* Fills the phone frame rather than re-deriving the viewport height, so the
+     hero can't desync from .phone (which is margin-offset on desktop). */
+  height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
+/* Hero photo. The artwork is authored at 402x791 (the iPhone 16/17 canvas),
+   so at the target ratio it fills its slot with only a few px trimmed off the
+   sides. `flex: 1` + `min-height: 0` lets it absorb the leftover height at any
+   aspect ratio, and anchoring object-position to the top keeps RYO's face in
+   frame — the sacrificial edge is the bottom, which sits behind .hero__logo
+   anyway. Note this replaces a `padding-top` inset: padding on a replaced
+   element shrinks the content box object-fit resolves against, so the crop
+   drifted per aspect ratio while the gap scaled off the width instead. */
 .landing__photo {
-  position: absolute;
-  padding-top: 5%;
+  flex: 1;
+  min-height: 0;
   width: 100%;
-  height: 100%;
   object-fit: cover;
-  object-position: bottom center;
+  object-position: center top;
   display: block;
 }
 .hero__logo {
   position: absolute;
   bottom: 0%;
   width: 100%;
+  height: auto;
   z-index: 2;
   filter: drop-shadow(0 2px 0 rgba(58, 57, 255, 0.15));
 }
@@ -196,6 +226,7 @@ body {
   right: 5%;
   bottom: 38%;
   width: 22%;
+  height: auto;
   max-width: 92px;
   z-index: 2;
   animation: mascot-spin 5s linear infinite;
@@ -310,6 +341,11 @@ body {
   flex-direction: column;
   min-height: 100%;
 }
+/* Square photo stage. The inset is a percentage, not a fixed 80px, so the
+   product occupies the same share of the tile on every screen — a fixed inset
+   ate 44% of a 320px tile but only 40% of a 440px one, so photos looked
+   smaller on small phones. 22% reproduces the original 80px at the 402px
+   design width. */
 .detail__image {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -318,9 +354,8 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  margin-bottom: 0;
   flex-shrink: 0;
-  padding: 80px;
+  padding: 22%;
 }
 .detail__image img {
   width: 100%;
@@ -396,8 +431,8 @@ body {
 
 .panel__title {
   margin: 25px 0;
-  font-size: 2.3rem;
-  font-weight: 900;
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--ink);
 }
 .panel__meta {
@@ -439,9 +474,10 @@ body {
 }
 .panel__desc {
   margin: 0 0 14px;
-  font-size: 1rem;
-  line-height: 1.55;
-  color: #2c2c50;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: #262626;
+  font-family: "42dot Sans";
 }
 .panel__desc:last-child {
   margin-bottom: 0;
