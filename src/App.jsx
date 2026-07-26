@@ -18,6 +18,11 @@ export default function App() {
     );
   }
 
+  // "grid" and "detail" both live inside a subcategory, so both need its
+  // label + theme color for the appbar — resolved once here instead of
+  // twice in the switch below.
+  const found = route.subId ? findSubcategory(route.subId) : null;
+
   let title = "SPACE SCOUTS";
   let pageColor; // single source of truth — flows to both the appbar and the page body
   let iconActive = 2;
@@ -25,18 +30,24 @@ export default function App() {
   let onIconClick;
   let view;
 
+  if (found) {
+    title = found.sub.label;
+    pageColor = found.sub.color;
+  } else if (route.subId) {
+    title = route.subId;
+    pageColor = "pink";
+  }
+
   switch (route.view) {
     case "menu":
       title = "";
       view = <Menu />;
       break;
     case "grid":
+      onIconClick = () => go("#/menu");
       view = <RewardGrid subId={route.subId} />;
       break;
-    case "detail": {
-      const found = findSubcategory(route.subId);
-      title = found ? found.sub.label : route.subId;
-      pageColor = found ? found.sub.color : "pink";
+    case "detail":
       iconActive = 0;
       iconLabel = "Back to list";
       onIconClick = () => go(`#/c/${route.subId}`);
@@ -50,7 +61,6 @@ export default function App() {
         />
       );
       break;
-    }
     case "soon":
     default:
       title = "";

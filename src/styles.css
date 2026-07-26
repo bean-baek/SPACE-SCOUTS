@@ -15,7 +15,7 @@
   --shadow: 0 6px 14px rgba(58, 57, 255, 0.12);
   --maxw: 440px;
   --pad: 18px;
-  --font-round: "Albert Sans";
+  --font-round: "Albert Sans", sans-serif;
 }
 
 * {
@@ -93,7 +93,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: calc(env(safe-area-inset-top) + 14px) var(--pad) 12px;
+  padding: calc(env(safe-area-inset-top) + 20px) var(--pad) 20px;
   background: transparent;
 }
 .appbar.theme-pink {
@@ -125,10 +125,18 @@ body {
 
 .appbar__title {
   margin: 0;
-  font-size: 2rem;
-  font-weight: 900;
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 2rem;
   letter-spacing: 0.02em;
   color: var(--ink);
+}
+/* Landing's title stays bold — every other appbar (grid/detail pages) uses
+   the lighter weight above. */
+.appbar--overlay .appbar__title {
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  font-weight: 900;
 }
 /* Shared toggle icon (appbar home button + landing header icon) */
 .toggle-icon {
@@ -181,7 +189,6 @@ body {
   bottom: 0%;
   width: 100%;
   z-index: 2;
-  animation: spin 2s linear infinite;
   filter: drop-shadow(0 2px 0 rgba(58, 57, 255, 0.15));
 }
 .hero__mascot {
@@ -192,6 +199,15 @@ body {
   max-width: 92px;
   z-index: 2;
   animation: mascot-spin 5s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes mascot-spin {
@@ -222,7 +238,7 @@ body {
   background: none;
   text-align: right;
   font-family: inherit;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 2.25rem;
   color: var(--ink);
   padding: 0;
@@ -256,7 +272,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2%;
-  /* padding: 10% 5%; */
+  padding: 10% 5%;
 }
 .grid__tile {
   aspect-ratio: 1 / 1;
@@ -284,28 +300,6 @@ body {
   color: #9a9a9a;
   text-align: center;
   line-height: 1.3;
-}
-
-/* Floating action button — always brand pink, home shortcut */
-.fab {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(env(safe-area-inset-bottom) + 24px);
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  border: none;
-  background: var(--pink);
-  color: var(--ink);
-  font-weight: 900;
-  font-size: 1.2rem;
-  box-shadow: 0 6px 16px rgba(58, 57, 255, 0.25);
-  cursor: pointer;
-  z-index: 6;
-}
-.fab:active {
-  transform: translateX(-50%) translateY(2px);
 }
 
 /* ---------- Detail view ---------- */
@@ -430,7 +424,7 @@ body {
   font-family: inherit;
   font-size: 1rem;
   font-weight: 600;
-  padding: 5px 20px;
+  padding: 5px 15px;
   border: 1px solid var(--ink);
   background: transparent;
   color: var(--ink);
