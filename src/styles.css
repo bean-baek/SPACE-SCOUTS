@@ -255,8 +255,8 @@ body {
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  padding-top: 4px;
+  gap: 2%;
+  /* padding: 10% 5%; */
 }
 .grid__tile {
   aspect-ratio: 1 / 1;
