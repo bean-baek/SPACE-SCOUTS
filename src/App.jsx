@@ -25,6 +25,8 @@ export default function App() {
 
   let title = "SPACE SCOUTS";
   let pageColor; // single source of truth — flows to both the appbar and the page body
+  let appbarColor; // appbar only changes color on detail pages
+  let titleBold = false; // grid pages have bold title
   let iconActive = 2;
   let iconLabel = "Home";
   let onIconClick;
@@ -44,6 +46,7 @@ export default function App() {
       view = <Menu />;
       break;
     case "grid":
+      titleBold = true;
       onIconClick = () => go("#/menu");
       view = <RewardGrid subId={route.subId} />;
       break;
@@ -51,6 +54,7 @@ export default function App() {
       iconActive = 0;
       iconLabel = "Back to list";
       onIconClick = () => go(`#/c/${route.subId}`);
+      appbarColor = pageColor;
       view = (
         <ItemDetail
           key={route.itemId}
@@ -72,7 +76,8 @@ export default function App() {
       <img className="sparkles" src="/images/sparkle.png" alt="" aria-hidden="true" />
       <Appbar
         title={title}
-        color={pageColor}
+        color={appbarColor}
+        titleBold={titleBold}
         iconActive={iconActive}
         iconLabel={iconLabel}
         onIconClick={onIconClick}
