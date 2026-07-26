@@ -237,10 +237,10 @@ export const DATA = {
         meta: "랜덤 보급품 · 아크릴 키링 4종",
         image: "/items/acrylic-keyring_괴물.png",
         images: {
-          괴물: "/items/acrylic-keyring_괴물.png",
-          똥: "/items/acrylic-keyring_똥.png",
-          대장: "/items/acrylic-keyring_대장.png",
-          펫: "/items/acrylic-keyring_펫.png",
+          괴물: "/items/acrylic-keyring_monster.png",
+          똥: "/items/acrylic-keyring_poop.png",
+          대장: "/items/acrylic-keyring_captain.png",
+          펫: "/items/acrylic-keyring_pet.png",
         },
         desc: [
           "평범한 아크릴 키링은 이제 그만!",
@@ -309,7 +309,7 @@ export const DATA = {
         ],
       },
       {
-        id: "acrylic-stand",
+        id: "pouch",
         name: "[E] POUCH",
         options: ["핑크", "블루"],
         meta: "랜덤 보급품 · 파우치 2종",
@@ -374,14 +374,15 @@ export const DATA = {
         name: "ACRYLIC CLIP",
         options: ["시온★료", "리쿠★료", "유우시★료", "재희★료", "사쿠야★료"],
         meta: "캡슐 보급품 · 아크릴 집게 5종",
-        image: "/items/acrylic-clip_시온★료.png",
+        image: "/items/acrylic-clip_shion-ryo.png",
         images: {
-          "시온★료": "/items/acrylic-clip_시온★료.png",
-          "리쿠★료": "/items/acrylic-clip_리쿠★료.png",
-          "유우시★료": "/items/acrylic-clip_유우시★료.png",
-          "재희★료": "/items/acrylic-clip_재희★료.png",
-          "사쿠야★료": "/items/acrylic-clip_사쿠야★료.png",
+          "시온★료": "/items/acrylic-clip_shion-ryo.png",
+          "리쿠★료": "/items/acrylic-clip_riku-ryo.png",
+          "유우시★료": "/items/acrylic-clip_yuushi-ryo.png",
+          "재희★료": "/items/acrylic-clip_jaehee-ryo.png",
+          "사쿠야★료": "/items/acrylic-clip_sakuya-ryo.png",
         },
+
         desc: [
           "대장과 탐사 도중 만난 친구들과 함께한 순간을 담은\n아크릴 집게 5종을 준비했어요!\n각 친구와 대장이 함께 있는 귀여운 일러스트로 제작되었습니다.",
           "약 5cm 크기로,\n다이어리와 사진을 꾸미거나 메모를 고정할 때 사용할 수 있어요.",
