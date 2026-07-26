@@ -204,7 +204,7 @@ body {
 
 .landing__logo {
   position: absolute;
-  bottom: 5%;
+  bottom: 0%;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -214,26 +214,25 @@ body {
 }
 .landing__star {
   top: 15%;
-  left: 50%;
+  left: 55%;
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   color: #cbff88;
   cursor: pointer;
   z-index: 3;
-  transition: transform 0.2s ease-out;
   user-select: none;
   transform-origin: center;
 }
 
 .landing__star:nth-of-type(3) {
-  top: 8%;
-  left: 18%;
+  left: 25%;
 }
-.landing__star:nth-of-type(4) {
-  top: 8%;
+
+.landing__star:nth-of-type(5) {
   right: 18%;
 }
+
 .landing__star.active {
   animation: scaleUp 1s linear forwards;
 }
@@ -376,13 +375,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   flex-shrink: 0;
   padding: 22%;
 }
 .detail__image img {
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
   display: block;
 }

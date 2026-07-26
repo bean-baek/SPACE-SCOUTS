@@ -14,7 +14,13 @@ export default function Appbar({
 
   return (
     <ThemedSurface as="header" color={color} className="appbar">
-      <h1 className={`appbar__title ${titleBold ? "appbar__title--bold" : ""}`.trim()}>{title}</h1>
+      <h1
+        className={`appbar__title ${titleBold ? "appbar__title--bold" : ""}`.trim()}
+        onClick={() => go("#/")}
+        style={{ cursor: "pointer" }}
+      >
+        {title}
+      </h1>
       <ToggleIcon
         active={iconActive}
         size={30}
