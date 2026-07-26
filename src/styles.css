@@ -259,6 +259,7 @@ body {
   padding-top: 4px;
 }
 .grid__tile {
+  aspect-ratio: 1 / 1;
   border: none;
   background: none;
   display: flex;
