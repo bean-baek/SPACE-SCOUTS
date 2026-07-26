@@ -363,7 +363,7 @@ body {
   flex-direction: column;
   min-height: 100%;
 }
-/* Square photo stage with fixed padding for consistent positioning across viewports. */
+/* Square photo stage with responsive padding for consistent look across devices. */
 .detail__image {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -372,7 +372,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: 30px;
+  padding: clamp(20px, 8%, 50px);
 }
 .detail__image img {
   width: 100%;
