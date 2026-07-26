@@ -152,10 +152,10 @@ export const DATA = {
         name: "T-SHIRT",
         options: ["화이트", "스카이블루"],
         meta: "선착순 지급품 · 티셔츠 2종",
-        image: "/items/t-shirt_화이트.png",
+        image: "/items/t-shirt_skyblue.png",
         images: {
-          화이트: "/items/t-shirt_화이트.png",
-          스카이블루: "/items/t-shirt_스카이블루.png",
+          화이트: "/items/t-shirt_white.png",
+          스카이블루: "/items/t-shirt_skyblue.png",
         },
         desc: [
           "8월 1일과 8월 2일에 가입한 스카우트 대원들을 위한,\n특별한 티셔츠를 준비했어요!",
