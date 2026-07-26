@@ -15,10 +15,9 @@ export default function Landing() {
       />
 
       <img className="landing__photo" src="/images/landing.png" alt="RYO" />
-
       <img
         className="hero__logo"
-        src="/images/title.svg"
+        src="/images/landing.svg"
         alt="Space Scouts"
       />
       <img

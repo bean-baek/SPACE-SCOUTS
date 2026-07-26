@@ -216,11 +216,14 @@ body {
 }
 .hero__logo {
   position: absolute;
-  bottom: 0%;
+  bottom: 0;
+  left: 0;
   width: 100%;
   height: auto;
   z-index: 2;
   filter: drop-shadow(0 2px 0 rgba(58, 57, 255, 0.15));
+  object-fit: contain;
+  object-position: bottom center;
 }
 .hero__mascot {
   position: absolute;
