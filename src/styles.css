@@ -363,7 +363,11 @@ body {
   flex-direction: column;
   min-height: 100%;
 }
-/* Square photo stage with fixed padding for consistent positioning across viewports. */
+/* Square photo stage. The inset is a percentage, not a fixed 80px, so the
+   product occupies the same share of the tile on every screen — a fixed inset
+   ate 44% of a 320px tile but only 40% of a 440px one, so photos looked
+   smaller on small phones. 22% reproduces the original 80px at the 402px
+   design width. */
 .detail__image {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -372,11 +376,11 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: 60px;
+  padding: 22%;
 }
 .detail__image img {
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
   display: block;
 }
