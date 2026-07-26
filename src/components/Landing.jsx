@@ -30,42 +30,36 @@ export default function Landing() {
       />
 
       {/* Stars on hair */}
-      <svg
+      <img
         className={`landing__star ${activeStars.left ? "active" : ""}`}
+        src="/images/Star.svg"
+        alt="Star"
         onMouseDown={() => handleStarMouseDown("left")}
         onMouseUp={() => handleStarMouseUp("left")}
         onMouseLeave={() => handleStarMouseUp("left")}
         onTouchStart={() => handleStarMouseDown("left")}
         onTouchEnd={() => handleStarMouseUp("left")}
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-      <svg
+      />
+      <img
         className={`landing__star ${activeStars.middle ? "active" : ""}`}
+        src="/images/Star.svg"
+        alt="Star"
         onMouseDown={() => handleStarMouseDown("middle")}
         onMouseUp={() => handleStarMouseUp("middle")}
         onMouseLeave={() => handleStarMouseUp("middle")}
         onTouchStart={() => handleStarMouseDown("middle")}
         onTouchEnd={() => handleStarMouseUp("middle")}
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-      <svg
+      />
+      <img
         className={`landing__star ${activeStars.right ? "active" : ""}`}
+        src="/images/Star.svg"
+        alt="Star"
         onMouseDown={() => handleStarMouseDown("right")}
         onMouseUp={() => handleStarMouseUp("right")}
         onMouseLeave={() => handleStarMouseUp("right")}
         onTouchStart={() => handleStarMouseDown("right")}
         onTouchEnd={() => handleStarMouseUp("right")}
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
+      />
 
       <img
         className="hero__mascot"
