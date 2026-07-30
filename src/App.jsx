@@ -92,7 +92,11 @@ export default function App() {
 
   return (
     <div className="phone">
-      <img className="sparkles" src="/images/sparkle.png" alt="" aria-hidden="true" />
+      {/* The board has its own starfield (bg_star.svg); skip the global sparkle overlay
+          there so the two star layers don't stack. */}
+      {route.view !== "board" && (
+        <img className="sparkles" src="/images/sparkle.png" alt="" aria-hidden="true" />
+      )}
       <Appbar
         title={title}
         color={appbarColor}

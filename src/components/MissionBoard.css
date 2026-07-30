@@ -31,6 +31,9 @@
 .board {
   position: relative;
   height: 100%;
+  /* break out of #app's side padding so the board — and its full starfield — is
+     edge-to-edge. .phone clips overflow-x, so this can't cause a horizontal scrollbar. */
+  margin: 0 calc(-1 * var(--pad));
   overflow: hidden;
 }
 
@@ -52,26 +55,36 @@
   cursor: pointer;
 }
 
-/* .board__stars {
+/* Full starfield background (bg_star.svg is one 416×728 field, not a single star).
+   Breaks out of #app's side padding so it spans the full screen width, edge to edge. */
+/* Individually placed stars (star.svg) — center-anchored via translate; left/top/width
+   come from the STARS table inline, so each lands at its exact reference spot. */
+
+/* One-shot entrance: each star eases down into its set position while fading in — a smooth
+   settle, no bounce. Plays once per board open (no loop). */
+@keyframes star-drop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(-90px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(0);
+  }
+}
+.board__star {
   position: absolute;
-  inset: 0;
   z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
-  opacity: 0.55;
-  pointer-events: none;
-  z-index: 1;
-} */
-/* .board__stars img {
-  position: absolute;
   height: auto;
-} */
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  /* easeOutExpo-style: fast start, long gentle glide to rest — reads as "smooth" */
+  animation: star-drop 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
 
 .board__decor {
   position: absolute;
-  bottom: 8.4%;
+  bottom: 6.6%;
   width: 100%;
   height: auto;
   z-index: 1;
@@ -101,12 +114,12 @@
   position: absolute;
   left: var(--pad);
   right: var(--pad);
-  bottom: 14px;
+  bottom: calc(env(safe-area-inset-bottom) + 10px);
   z-index: 6;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 20px;
+  padding: 8px 20px;
   border: var(--outline);
   border-radius: 999px;
   background: var(--lime);
@@ -116,7 +129,7 @@
   letter-spacing: 0.02em;
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 4px 0 var(--ink);
+  /* box-shadow: 0 4px 0 var(--ink); */
   transition:
     transform 0.1s ease,
     box-shadow 0.1s ease;
@@ -127,7 +140,7 @@
   box-shadow: 0 1px 0 var(--ink);
 }
 .board__cta img {
-  width: 26px;
+  width: 32px;
   height: auto;
 }
 
@@ -156,7 +169,7 @@
   background: var(--paper);
   border: var(--outline);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  /* box-shadow: var(--shadow); */
 }
 .composer__x {
   position: absolute;
@@ -166,7 +179,7 @@
   background: none;
   color: var(--ink);
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1;
   cursor: pointer;
 }
@@ -190,6 +203,7 @@
   border-radius: 50%;
   cursor: pointer;
 }
+
 .swatch__label {
   font-family: var(--font-round);
   font-size: 0.7rem;
@@ -200,7 +214,7 @@
 }
 .swatch__pop {
   position: absolute;
-  bottom: calc(100% + 8px);
+  top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
@@ -221,9 +235,9 @@
 .composer__text {
   width: 100%;
   resize: none;
-  padding: 12px 14px 20px;
+  padding: 12px 15px 20px;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 1rem;
   line-height: 1.4;
   color: #262626;
   background: var(--paper);
@@ -232,13 +246,13 @@
 }
 .composer__text:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(58, 57, 255, 0.2);
+  /* box-shadow: 0 0 0 3px rgba(58, 57, 255, 0.2); */
 }
 .composer__count {
   position: absolute;
   right: 10px;
-  bottom: 6px;
-  font-family: var(--font-round);
+  bottom: 15px;
+  font-family: var(--font-mono);
   font-size: 0.62rem;
   font-weight: 700;
   color: #9a9a9a;
@@ -255,7 +269,6 @@
   font-size: 0.95rem;
   letter-spacing: 0.06em;
   cursor: pointer;
-  box-shadow: 0 4px 0 var(--ink);
   transition:
     transform 0.1s ease,
     box-shadow 0.1s ease;
@@ -283,7 +296,7 @@
   transform: translate(-50%, -50%) scale(1);
   cursor: grab;
   touch-action: none;
-  filter: drop-shadow(0 6px 6px rgba(58, 57, 255, 0.22));
+  filter: drop-shadow(0 2px 2px rgba(58, 57, 255, 0.22));
   transition:
     transform 0.16s ease,
     filter 0.16s ease;
@@ -299,7 +312,7 @@
 }
 .placing__ufo.is-grabbed {
   transform: translate(-50%, -50%) scale(1.09);
-  filter: drop-shadow(0 12px 12px rgba(58, 57, 255, 0.32));
+  filter: drop-shadow(0 5px 5px rgba(58, 57, 255, 0.2));
   cursor: grabbing;
 }
 .placing__bar {
@@ -316,7 +329,6 @@
   background: var(--paper);
   border: var(--outline);
   border-radius: 999px;
-  box-shadow: var(--shadow);
 }
 .placing__hint {
   font-family: var(--font-round);
@@ -372,8 +384,8 @@
 }
 .board-modal__text {
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-family: var(--font-round);
+  font-size: 1ch;
   line-height: 1.5;
   color: #262626;
   white-space: pre-wrap;
@@ -395,7 +407,7 @@
   border-radius: 999px;
   font-family: var(--font-round);
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: rem;
   letter-spacing: 0.05em;
   cursor: pointer;
 }
@@ -418,5 +430,9 @@
   .board__cta,
   .composer__launch {
     transition: none;
+  }
+  /* skip the drop-in — stars just appear at their final positions */
+  .board__star {
+    animation: none;
   }
 }
