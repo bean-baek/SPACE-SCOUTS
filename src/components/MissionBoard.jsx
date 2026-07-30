@@ -12,18 +12,20 @@ import {
 } from "./boardApi.js";
 import "./MissionBoard.css";
 
-// Fixed scatter for the decorative background stars — {left, top, size, rotate},
-// eyeballed from the reference so the board reads the same on every load.
+// Star positions, extracted from the design SVGs and expressed as % of the board
+// (center-anchored) + width as % of board width. Placing individual star.svg copies this
+// way lands them exactly like the reference at any size — unlike a full-bleed field, which
+// object-fit:cover would crop and shift. Top group = bg_star.svg, lower group = more_stars.svg.
 const STARS = [
-  { left: 62, top: 4, size: 46, rot: -12 },
-  { left: 8, top: 12, size: 34, rot: 8 },
-  { left: 82, top: 20, size: 26, rot: 20 },
-  { left: 4, top: 30, size: 22, rot: -6 },
-  { left: 88, top: 40, size: 30, rot: 14 },
-  { left: 70, top: 56, size: 24, rot: -18 },
-  { left: 12, top: 52, size: 28, rot: 10 },
-  { left: 84, top: 70, size: 20, rot: 0 },
-  { left: 22, top: 74, size: 18, rot: 16 },
+  { left: 18, top: 15, w: 28 }, // big, upper-left
+  { left: 76, top: 6, w: 16 }, // upper-right (below title)
+  { left: 95, top: 20, w: 15 }, // right edge, upper-mid
+  { left: 5, top: 30, w: 8 }, // left edge, mid
+  { left: 92, top: 34, w: 10 }, // right, mid-lower
+  { left: 7, top: 40, w: 15 }, // center-left (by the headline)
+  { left: 88, top: 60, w: 24 }, // big, lower-right
+  { left: 8, top: 66, w: 8 }, // big, lower-right
+  { left: 30, top: 53, w: 10 }, // lower-left
 ];
 
 export default function MissionBoard({ adminKey }) {
@@ -80,21 +82,21 @@ export default function MissionBoard({ adminKey }) {
         </button>
       )}
 
-      <div className="board__stars" aria-hidden="true">
-        {STARS.map((s, i) => (
-          <img
-            key={i}
-            src="/images/community/bg_star.svg"
-            alt=""
-            style={{
-              left: `${s.left}%`,
-              top: `${s.top}%`,
-              width: s.size,
-              transform: `rotate(${s.rot}deg)`,
-            }}
-          />
-        ))}
-      </div>
+      {STARS.map((s, i) => (
+        <img
+          key={i}
+          className="board__star"
+          src="/images/community/star.svg"
+          alt=""
+          aria-hidden="true"
+          style={{
+            left: `${s.left}%`,
+            top: `${s.top}%`,
+            width: `${s.w}%`,
+            animationDelay: `${i * 0.06}s`, // gentle cascade as they drop in
+          }}
+        />
+      ))}
 
       <img
         className="board__decor"

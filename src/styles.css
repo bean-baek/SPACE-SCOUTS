@@ -11,7 +11,7 @@
 
   --radius: 22px;
   --radius-sm: 14px;
-  --outline: 3px solid var(--ink);
+  --outline: 2px solid var(--ink);
   --shadow: 0 6px 14px rgba(58, 57, 255, 0.12);
   --maxw: 440px;
   --pad: 18px;

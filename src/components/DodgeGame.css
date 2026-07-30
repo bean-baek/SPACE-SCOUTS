@@ -48,9 +48,10 @@
   height: 38px;
   padding: 0;
   border: none;
+  opacity: 0.2;
   border-radius: 50%;
-  background: rgba(16, 15, 96, 0.55);
-  color: var(--dg-paper);
+  background: var(--dg-bg);
+  color: var(--dg-accent);
   cursor: pointer;
   transition:
     color 0.15s ease,
@@ -58,7 +59,8 @@
 }
 
 .dg-root .dg-back:hover {
-  color: var(--dg-accent);
+  color: var(--dg-paper);
+  opacity: 0.4;
 }
 
 .dg-root .dg-back:active {
@@ -81,16 +83,15 @@
 }
 
 .dg-root .dg-hud__label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.72);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--dg-accent);
 }
 
 /* tabular-nums stops the timer from twitching as digit widths change */
 .dg-root .dg-hud__time {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
   color: var(--dg-accent);
   font-variant-numeric: tabular-nums;
