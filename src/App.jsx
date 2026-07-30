@@ -7,6 +7,7 @@ import RewardGrid from "./components/RewardGrid.jsx";
 import ItemDetail from "./components/ItemDetail.jsx";
 import Soon from "./components/Soon.jsx";
 import DodgeGame from "./components/DodgeGame.jsx";
+import MissionBoard from "./components/MissionBoard.jsx";
 
 export default function App() {
   const route = useHashRoute();
@@ -15,6 +16,17 @@ export default function App() {
     return (
       <div className="phone">
         <Landing />
+      </div>
+    );
+  }
+
+  // The game runs full-bleed inside the phone frame — no appbar, no #app
+  // padding — so it gets its own early return like the landing. Its own
+  // floating back button handles navigation out.
+  if (route.view === "game") {
+    return (
+      <div className="phone">
+        <DodgeGame />
       </div>
     );
   }
@@ -66,9 +78,11 @@ export default function App() {
         />
       );
       break;
-    case "game":
-      title = "";
-      view = <DodgeGame />;
+    case "board":
+      title = "MISSION REPORT";
+      titleBold = true;
+      onIconClick = () => go("#/menu");
+      view = <MissionBoard adminKey={route.adminKey} />;
       break;
     case "soon":
     default:

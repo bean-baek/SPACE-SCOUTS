@@ -58,7 +58,12 @@ export const DATA = {
         },
       ],
     },
-    { id: "mission-reports", label: "MISSION REPORTS", subcategories: [] },
+    {
+      id: "mission-reports",
+      label: "MISSION REPORTS",
+      link: "#/board", // no subcategories — the heading opens the community board
+      subcategories: [],
+    },
     { id: "training-center", label: "TRAINING CENTER", subcategories: [] },
   ],
 

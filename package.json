@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "react": "^19.2.8",
+    "react-colorful": "^5.8.0",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.4",
-    "vite": "^8.1.5"
+    "vite": "^8.1.5",
+    "wrangler": "^4.115.0"
   }
 }
