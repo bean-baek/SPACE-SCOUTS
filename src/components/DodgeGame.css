@@ -13,9 +13,9 @@
   height: 100%;
   min-height: 320px;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: inherit; /* square on mobile, matches the phone frame's 40px on desktop */
   background: var(--dg-bg);
-  font-family: "Albert Sans", sans-serif;
+  font-family: var(--font-round); /* same type stack as the rest of the site */
   color: var(--dg-paper);
   user-select: none;
   -webkit-user-select: none;
@@ -32,6 +32,39 @@
   touch-action: none;
 }
 
+/* ---------- back button ---------- */
+
+/* A translucent dark disc keeps the arrow legible over both the canvas and the
+   dimmed overlays. z-4 puts it above the overlays (z-3) so it never gets covered. */
+.dg-root .dg-back {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 12px);
+  left: 12px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(16, 15, 96, 0.55);
+  color: var(--dg-paper);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.dg-root .dg-back:hover {
+  color: var(--dg-accent);
+}
+
+.dg-root .dg-back:active {
+  transform: scale(0.92);
+}
+
 /* ---------- HUD ---------- */
 
 .dg-root .dg-hud {
@@ -42,21 +75,22 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
-  padding: 14px 16px;
+  /* extra left padding clears the floating back button, which shares this corner */
+  padding: 14px 16px 14px 60px;
   pointer-events: none;
 }
 
 .dg-root .dg-hud__label {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   color: rgba(255, 255, 255, 0.72);
 }
 
 /* tabular-nums stops the timer from twitching as digit widths change */
 .dg-root .dg-hud__time {
   font-size: 1.5rem;
-  font-weight: 900;
+  font-weight: 700;
   line-height: 1;
   color: var(--dg-accent);
   font-variant-numeric: tabular-nums;
@@ -93,9 +127,9 @@
 
 .dg-root .dg-title {
   margin: 0;
-  font-size: 1.85rem;
-  font-weight: 900;
-  letter-spacing: 0.03em;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   line-height: 1.1;
 }
 
@@ -113,15 +147,16 @@
 
 .dg-root .dg-score b {
   font-size: 1.6rem;
-  font-weight: 900;
+  font-weight: 700;
   color: var(--dg-accent);
 }
 
 .dg-root .dg-hint {
   margin: 0;
   max-width: 260px;
-  font-size: 0.78rem;
-  font-weight: 500;
+  font-family: var(--font-mono); /* matches the item-detail description type */
+  font-size: 0.75rem;
+  font-weight: 300;
   line-height: 1.45;
   color: rgba(255, 255, 255, 0.72);
 }
@@ -135,8 +170,8 @@
   color: var(--dg-bg);
   font-family: inherit;
   font-size: 0.95rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   cursor: pointer;
   transition: transform 0.12s ease;
 }
@@ -153,7 +188,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dg-root .dg-btn {
+  .dg-root .dg-btn,
+  .dg-root .dg-back {
     transition: none;
   }
 }

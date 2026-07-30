@@ -15,7 +15,9 @@ export default function Menu() {
             <button
               className="menu__heading"
               onClick={() =>
-                hasSubs ? setOpenId(isOpen ? null : cat.id) : go("#/soon")
+                hasSubs
+                  ? setOpenId(isOpen ? null : cat.id)
+                  : go(cat.link ?? "#/soon")
               }>
               {cat.label}
             </button>

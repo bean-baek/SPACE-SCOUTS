@@ -1,0 +1,422 @@
+/* Community board (MISSION REPORT). Scoped to .board and its overlays. Uses the site's
+   design tokens (--ink outlines, --lime, chunky radii, flat pressed shadows). */
+
+/* ---------- recolorable UFO ---------- */
+/* .ufo width is set inline; aspect-ratio gives the height. The blue line-art fills the
+   box; the colour fill SVG is inset onto the saucer region of that outline. */
+.ufo {
+  position: relative;
+  display: inline-block;
+  aspect-ratio: 53 / 43;
+  line-height: 0;
+}
+.ufo__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ufo__fill {
+  position: absolute;
+  /* tuned visually against ufo_lines.svg so the fill tucks just under the outline at
+     every size — no colour spilling past the blue linework. */
+  top: 5%;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---------- board surface (fixed, single screen) ---------- */
+.board {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Owner moderation badge — only shown in admin mode; tap to leave. */
+.board__admin {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 8;
+  padding: 6px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-round);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+/* .board__stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 1;
+} */
+/* .board__stars img {
+  position: absolute;
+  height: auto;
+} */
+
+.board__decor {
+  position: absolute;
+  bottom: 8.4%;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.board__ufo {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.board__ufo:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+.board__ufo:active {
+  transform: translate(-50%, -50%) scale(0.94);
+}
+
+/* ---------- CTA pill ---------- */
+.board__cta {
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 14px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border: var(--outline);
+  border-radius: 999px;
+  background: var(--lime);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--ink);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+.board__cta:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+.board__cta img {
+  width: 26px;
+  height: auto;
+}
+
+/* ---------- composer ---------- */
+.composer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(58, 57, 255, 0.18);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.composer__sheet {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  padding: 26px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: var(--paper);
+  border: var(--outline);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.composer__x {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+.composer__swatches {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+.swatch {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.swatch__dot {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: var(--outline);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.swatch__label {
+  font-family: var(--font-round);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.swatch__pop {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  padding: 8px;
+  background: var(--paper);
+  border: var(--outline);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+.swatch__pop .react-colorful {
+  width: 168px;
+  height: 168px;
+}
+.composer__field {
+  position: relative;
+  width: 100%;
+}
+.composer__text {
+  width: 100%;
+  resize: none;
+  padding: 12px 14px 20px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #262626;
+  background: var(--paper);
+  border: var(--outline);
+  border-radius: var(--radius-sm);
+}
+.composer__text:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(58, 57, 255, 0.2);
+}
+.composer__count {
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  font-family: var(--font-round);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #9a9a9a;
+}
+.composer__launch {
+  width: 100%;
+  padding: 13px;
+  border: var(--outline);
+  border-radius: 999px;
+  background: var(--lime);
+  color: var(--ink);
+  font-family: var(--font-round);
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--ink);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+.composer__launch:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+.composer__launch:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---------- placing (fly-up + drag) ---------- */
+.placing {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  touch-action: none;
+}
+
+.placing__ufo {
+  position: absolute;
+  z-index: 16;
+  transform: translate(-50%, -50%) scale(1);
+  cursor: grab;
+  touch-action: none;
+  filter: drop-shadow(0 6px 6px rgba(58, 57, 255, 0.22));
+  transition:
+    transform 0.16s ease,
+    filter 0.16s ease;
+}
+/* left/top only ease during the fly-up; during a drag they update instantly so the
+   UFO tracks the finger with no lag. Only the scale/shadow transition survives a grab. */
+.placing__ufo.is-flying {
+  transition:
+    transform 0.16s ease,
+    filter 0.16s ease,
+    top 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+    left 0.5s ease;
+}
+.placing__ufo.is-grabbed {
+  transform: translate(-50%, -50%) scale(1.09);
+  filter: drop-shadow(0 12px 12px rgba(58, 57, 255, 0.32));
+  cursor: grabbing;
+}
+.placing__bar {
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 14px;
+  z-index: 17;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 10px 10px 18px;
+  background: var(--paper);
+  border: var(--outline);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+}
+.placing__hint {
+  font-family: var(--font-round);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.placing__done {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-round);
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.placing__done:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ---------- message modal ---------- */
+.board-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(58, 57, 255, 0.22);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.board-modal__card {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  background: var(--paper);
+  border: var(--outline);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.board-modal__text {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #262626;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.board-modal__char {
+  width: 44px;
+  height: auto;
+}
+.board-modal__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.board-modal__close,
+.board-modal__delete {
+  padding: 10px 26px;
+  border: var(--outline);
+  border-radius: 999px;
+  font-family: var(--font-round);
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+.board-modal__close {
+  background: var(--lime);
+  color: var(--ink);
+}
+/* Delete is the secondary action — white with the same blue outline, so it reads as
+   available but not the default tap. */
+.board-modal__delete {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .placing__ufo,
+  .placing__ufo.is-flying {
+    transition: none;
+  }
+  .board__cta,
+  .composer__launch {
+    transition: none;
+  }
+}

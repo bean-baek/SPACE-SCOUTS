@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { preloadAssets, ASSETS } from "../game/dodgeAssets.js";
 import { createDodgeGame, BOSS_HP, PHASE1_END } from "../game/dodgeEngine.js";
+import { go } from "../hooks/useHashRoute.js";
 import "./DodgeGame.css";
 
 // React owns only the shell: the canvas element, the overlays, and the engine's
@@ -82,6 +83,28 @@ export default function DodgeGame() {
 
   return (
     <div className="dg-root">
+      {/* Floating exit — sits above every overlay (z-4) so it stays tappable on the
+          start and result screens. Drawn in the game's own white/lime palette rather
+          than the site's blue toggle icon, which would vanish on the blue field. */}
+      <button
+        type="button"
+        className="dg-back"
+        onClick={() => go("#/menu")}
+        aria-label="Back to menu">
+        <svg
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+      </button>
+
       <canvas ref={canvasRef} className="dg-canvas" />
 
       <div className="dg-hud" ref={hudRef} aria-hidden="true">

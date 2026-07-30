@@ -13,6 +13,13 @@ function parse(hash) {
       option: parts[3] ? decodeURIComponent(parts[3]) : undefined,
     };
   if (parts[0] === "game") return { view: "game" };
+  if (parts[0] === "board") {
+    // #/board/admin/<key> — owner unlock; the key is captured then stripped from the URL.
+    if (parts[1] === "admin" && parts[2]) {
+      return { view: "board", adminKey: decodeURIComponent(parts[2]) };
+    }
+    return { view: "board" };
+  }
   if (parts[0] === "soon") return { view: "soon" };
   return { view: "landing" };
 }

@@ -1,0 +1,10 @@
+name = "space-scouts"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"
+
+# Community board storage. Create the DB, then paste its id below:
+#   npx wrangler d1 create space-scouts-board
+[[d1_databases]]
+binding = "DB"
+database_name = "space-scouts-board"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
