@@ -61,7 +61,10 @@ export const DATA = {
     {
       id: "mission-reports",
       label: "MISSION REPORTS",
-      link: "#/board", // no subcategories — the heading opens the community board
+      // Community board isn't live yet — send visitors to the "soon" page. The board
+      // itself still works at #/board directly (for testing / admin) once ready, flip
+      // this back to "#/board".
+      link: "#/soon",
       subcategories: [],
     },
     { id: "training-center", label: "TRAINING CENTER", subcategories: [] },
