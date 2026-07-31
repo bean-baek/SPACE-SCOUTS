@@ -9,7 +9,10 @@ Personal fan **cafe / birthday webpage for NCT WISH's RYO**. Mobile-first, targe
 ## Stack
 - Vite 8 + React 19 (`npm install`, `npm run dev`, `npm run build`)
 - No router library — a ~30-line `useHashRoute` hook (`src/hooks/useHashRoute.js`) covers the app's flat route list
-- Plain CSS (`src/styles.css`), no CSS-in-JS/Tailwind — kept the hand-authored kawaii styling from the static prototype. The Dodge game ships its own scoped stylesheet (`src/components/DodgeGame.css`)
+- Plain CSS (`src/styles.css`), no CSS-in-JS/Tailwind — kept the hand-authored kawaii styling from the static prototype. The Dodge game and the board each ship their own scoped stylesheet (`src/components/DodgeGame.css`, `src/board/MissionBoard.css`)
+- `react-colorful` — the only runtime dependency beyond React; powers the three UFO colour pickers in the board composer
+- Cloudflare Pages + D1 for the board backend (`functions/`, `schema.sql`); see DEPLOY.md
+- `@playwright/test` (dev only) — visual baseline, see below
 
 ## Information architecture
 ```
@@ -20,10 +23,12 @@ Personal fan **cafe / birthday webpage for NCT WISH's RYO**. Mobile-first, targe
                                                  CAPSULE DRAW [live]
                      MISSION REPORTS  (no subcategories yet → #/soon)
                      TRAINING CENTER  (no subcategories yet → #/soon)
-#/c/<subId>        Reward grid — 2-col image tiles + floating "R" home button
+#/c/<subId>        Reward grid — 2-col image tiles
 #/i/<subId>/<id>   Item detail — image (or swipeable carousel) + info panel
                    (name, OPTIONS chips, meta, desc). Optional 4th segment = selected option.
 #/game             DODGE! — full-canvas survival/boss mini-game
+#/board            MISSION REPORT — community board (compose a UFO, drag to place, read, delete)
+#/board/admin/<key> Owner unlock — stores the admin key, then strips it from the URL
 #/soon             Placeholder for any not-yet-designed link
 ```
 All five SPACE SUPPLIES subcategories have designed items. The appbar mascot icon is a
@@ -41,11 +46,12 @@ All five SPACE SUPPLIES subcategories have designed items. The appbar mascot ico
 | `--grey` | `#e5e5e5` | app surface background / placeholder tiles |
 
 Each subcategory carries a `color` field in `src/data.js` (`"pink" | "blue" | "yellow" | "lime" | "khaki"`).
-`App.jsx`/`Menu.jsx`/`RewardGrid.jsx`/`ItemDetail.jsx` apply a `theme-{color}` class — the reusable
-`ThemedSurface.jsx` wrapper does this — which sets a local `--accent` CSS variable. The accordion
-header, grid FAB, and detail panel all read `--accent`, so a whole subcategory re-themes itself from
-one field. To add a new color: add a `--<name>` token in `:root` **and** a `.theme-<name>` rule in
-`styles.css`. Kawaii, rounded, thick blue outlines, chunky radii (16–24px), flat "pressed" shadows
+`App.jsx` reads it and passes it to the reusable `ThemedSurface.jsx` wrapper, which applies a
+`theme-{color}` class. Two consumers style that class directly in `styles.css`: the appbar
+(`.appbar.theme-<name>`, detail pages only) and the item-detail panel
+(`.theme-<name>.panel--themed`). To add a new color you therefore edit **three** places: a
+`--<name>` token in `:root`, an `.appbar.theme-<name>` rule, and a `.theme-<name>.panel--themed`
+rule. Kawaii, rounded, thick blue outlines, chunky radii (16–24px), flat "pressed" shadows
 that vanish on `:active`.
 
 ## Assets
@@ -62,7 +68,7 @@ that vanish on `:active`.
 index.html          Vite entry, mounts #root
 src/
   main.jsx           ReactDOM root
-  App.jsx            route → view switch, appbar wiring (incl. #/game)
+  App.jsx            route → view switch, appbar wiring (incl. #/game, #/board)
   data.js            content model — EDIT THIS to add real content (5 live subcategories, ~19 items)
   styles.css         design tokens + all view styles
   hooks/
@@ -77,7 +83,30 @@ src/
   game/
     dodgeEngine.js     imperative 60fps loop, physics, boss phase (BOSS_HP, PHASE1_END)
     dodgeAssets.js     sprite preloader (preloadAssets, ASSETS)
+  board/             community board (#/board) — colocated feature
+    MissionBoard.jsx   board surface: starfield, placed UFOs, modal, admin badge
+    MissionBoard.css   scoped styles for the board, composer, placing layer, modal
+    Ufo.jsx            recolorable UFO (inlined SVG paths + static line-art overlay)
+    UfoComposer.jsx    two-phase compose → fly-up → drag-to-place flow
+    boardApi.js        data client: /api/messages, with a localStorage fallback for `vite dev`
+functions/
+  api/messages.js    Cloudflare Pages Function — GET/POST/DELETE, backed by D1 (binding `DB`)
+schema.sql           D1 table + index for the board
+design/              source art referenced only by comments; never served
+docs/                internal notes (item_list.md); never served
+tests/               Playwright visual baseline — `npx playwright test`
 ```
+
+## Verifying a change didn't move pixels
+The design is finished, so refactors must be visually inert. `tests/baseline.spec.js`
+captures 26 screenshots across every route, theme, and board state:
+```bash
+npx playwright test                     # assert nothing moved
+npx playwright test --update-snapshots  # re-record, only after an intended visual change
+```
+It stubs `Math.random` (RewardGrid shuffles tiles per load; the dodge engine seeds its
+starfield), seeds the board's localStorage, and disables CSS animations — otherwise no two
+runs would match. The game canvas is masked, since its rAF loop is timing-dependent.
 
 ## Content model (`src/data.js`)
 - `categories[].subcategories[]` each carry `{ id, label, live, color }`.
