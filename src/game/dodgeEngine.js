@@ -16,7 +16,7 @@ import { OBSTACLE_KEYS } from "./dodgeAssets.js";
 const DEBUG_START_TIME = 0;
 
 export const PHASE1_END = 20; // boss arrives
-export const BOSS_HP = 20; // clean hits needed to bring it down — the only way to win
+export const BOSS_HP = 50; // clean hits needed to bring it down — the only way to win
 
 const REF_W = 400; // design width every size is authored against
 const BG = "#3a39ff";
@@ -36,9 +36,12 @@ const STAR_CHANCE = 0.28;
 // Obstacles roll a size on spawn. The range is wide enough to read as genuine
 // variety, and the ceiling is expressed against the boss rather than as a flat
 // number, so nothing falling can ever rival the boss on screen.
-const OB_SIZE_MIN = 0.55;
-const OB_SIZE_MAX = 1.75;
-const OB_MAX_VS_BOSS = 0.6;
+// The ceiling has to move with the range: at the old 0.6 the largest rolls all
+// clipped to the same value, so raising only OB_SIZE_MAX would have flattened the
+// big end into one repeated size instead of making anything bigger.
+const OB_SIZE_MIN = 0.75;
+const OB_SIZE_MAX = 2.2;
+const OB_MAX_VS_BOSS = 0.78;
 
 const BOSS_SCALE = 0.38; // boss sprite box as a share of canvas width
 
