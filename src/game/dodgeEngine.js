@@ -16,7 +16,7 @@ import { OBSTACLE_KEYS } from "./dodgeAssets.js";
 const DEBUG_START_TIME = 0;
 
 export const PHASE1_END = 20; // boss arrives
-export const BOSS_HP = 50; // clean hits needed to bring it down — the only way to win
+export const BOSS_HP = 100; // clean hits needed to bring it down — the only way to win
 
 const REF_W = 400; // design width every size is authored against
 const BG = "#3a39ff";
@@ -225,7 +225,7 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
     const base = (isStar ? 30 : 54) * scale;
     const box = Math.min(
       base * lerp(OB_SIZE_MIN, OB_SIZE_MAX, Math.random()),
-      W * BOSS_SCALE * OB_MAX_VS_BOSS
+      W * BOSS_SCALE * OB_MAX_VS_BOSS,
     );
     const { w, h } = fit(img, box);
     const speed =
@@ -273,7 +273,7 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
       spawnBullet(
         b.x,
         b.y + b.box * 0.22,
-        aim + off + (Math.random() - 0.5) * GUN_JITTER
+        aim + off + (Math.random() - 0.5) * GUN_JITTER,
       );
     }
   }
@@ -283,7 +283,11 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
     if (!b) return;
     const skew = Math.random() * Math.PI * 2;
     for (let i = 0; i < BURST_COUNT; i++) {
-      spawnBullet(b.x, b.y + b.box * 0.22, skew + (i / BURST_COUNT) * Math.PI * 2);
+      spawnBullet(
+        b.x,
+        b.y + b.box * 0.22,
+        skew + (i / BURST_COUNT) * Math.PI * 2,
+      );
     }
   }
 
@@ -301,7 +305,8 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
       const a = Math.random() * Math.PI * 2;
       const sp = (60 + Math.random() * 90) * scale;
       s.sparks.push({
-        x, y,
+        x,
+        y,
         vx: Math.cos(a) * sp,
         vy: Math.sin(a) * sp,
         life: 0.28,
@@ -384,8 +389,14 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
       const box = W * BOSS_SCALE;
       const { w, h } = fit(assets.boss, box);
       s.boss = {
-        x: W / 2, y: -box, box, w, h,
-        age: 0, gun: 0.5, burst: 1.2,
+        x: W / 2,
+        y: -box,
+        box,
+        w,
+        h,
+        age: 0,
+        gun: 0.5,
+        burst: 1.2,
         hp: BOSS_HP,
         hurt: false, // the HP bar stays hidden until the first clean hit lands
         flash: 0,
@@ -594,15 +605,24 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
   // ---------- input ----------
 
   const KEYMAP = {
-    ArrowLeft: "l", KeyA: "l",
-    ArrowRight: "r", KeyD: "r",
+    ArrowLeft: "l",
+    KeyA: "l",
+    ArrowRight: "r",
+    KeyD: "r",
   };
 
   // Up/down no longer steer, but they still have to be swallowed while playing —
   // otherwise they scroll the phone frame out from under the game.
   const SWALLOW = new Set([
-    "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
-    "KeyA", "KeyD", "KeyW", "KeyS", "Space",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+    "KeyA",
+    "KeyD",
+    "KeyW",
+    "KeyS",
+    "Space",
   ]);
 
   function onKeyDown(e) {
