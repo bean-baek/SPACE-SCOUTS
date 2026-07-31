@@ -30,7 +30,7 @@ export default function DodgeGame() {
       (err) => {
         if (cancelled) return;
         setError(err.message);
-      }
+      },
     );
     return () => {
       cancelled = true;
@@ -109,7 +109,7 @@ export default function DodgeGame() {
 
       <div className="dg-hud" ref={hudRef} aria-hidden="true">
         <span className="dg-hud__label" ref={labelRef}>
-          SURVIVAL TIME
+          생존 시간
         </span>
         <span className="dg-hud__time" ref={timeRef}>
           0.0
@@ -131,12 +131,18 @@ export default function DodgeGame() {
 
       {!error && status === "ready" && (
         <div className="dg-overlay">
-          <img className="dg-board" src={ASSETS.board} alt="" aria-hidden="true" />
-          <h2 className="dg-title">DODGE!</h2>
+          <img
+            className="dg-board"
+            src={ASSETS.board}
+            alt=""
+            aria-hidden="true"
+          />
+          <h2 className="dg-title">긴급 탐사 미션!</h2>
           <p className="dg-hint">
-            Steer left and right — arrow keys, A/D, or drag. One hit and it&rsquo;s
-            over. The boss arrives at {PHASE1_END}s; your gun opens up on its own,
-            and {BOSS_HP} clean hits will bring it down.
+            ← → 방향키, A / D 또는 드래그로 대장을 움직여 외계 젤리 괴물을 피해
+            주세요. 괴물과 충돌하면 즉시 탐사가 종료됩니다.{PHASE1_END}초 후
+            거대 젤리 괴물이 출현합니다. 대장의 무기는 자동으로 발사되며,{" "}
+            {BOSS_HP}회 명중 시 임무가 완료됩니다.
           </p>
           <button type="button" className="dg-btn" onClick={play}>
             START
@@ -146,20 +152,25 @@ export default function DodgeGame() {
 
       {!error && finished && (
         <div className="dg-overlay" role="alertdialog" aria-label="Result">
-          <img className="dg-board" src={ASSETS.board} alt="" aria-hidden="true" />
+          <img
+            className="dg-board"
+            src={ASSETS.board}
+            alt=""
+            aria-hidden="true"
+          />
           <h2 className={`dg-title${cleared ? " dg-title--clear" : ""}`}>
             {cleared ? "STAGE CLEAR!" : "GAME OVER"}
           </h2>
           <p className="dg-score">
-            <b>{(result?.time ?? 0).toFixed(1)}s</b> survived
+            <b>{(result?.time ?? 0).toFixed(1)}초</b> 동안 생존했습니다!
           </p>
           <p className="dg-hint">
             {cleared
-              ? "Boss down. Nothing left up there but stars."
-              : "So close. One more run?"}
+              ? "거대 젤리 괴물 처치 완료!\n우주의 평화는 오늘도 스카우트 대원들이 지켜냈습니다."
+              : "아쉽네요!\n다시 탐사를 시작해 볼까요?"}
           </p>
           <button type="button" className="dg-btn" onClick={play} autoFocus>
-            RESTART
+            다시 탐사하기
           </button>
         </div>
       )}
