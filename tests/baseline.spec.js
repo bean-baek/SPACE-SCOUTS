@@ -17,7 +17,7 @@ async function open(page, hash, { board = false } = {}) {
         localStorage.setItem("spacescouts:board", JSON.stringify(rows));
         localStorage.setItem("spacescouts:mine", JSON.stringify(mine));
       },
-      [BOARD_ROWS, MINE_MAP]
+      [BOARD_ROWS, MINE_MAP],
     );
   }
   await page.goto(`/${hash}`);
@@ -52,7 +52,9 @@ for (const [name, hash] of ROUTES) {
   test(`${name} @mobile`, async ({ page }) => {
     await page.setViewportSize(MOBILE);
     await open(page, hash);
-    await expect(page).toHaveScreenshot(`${name}-mobile.png`, { fullPage: true });
+    await expect(page).toHaveScreenshot(`${name}-mobile.png`, {
+      fullPage: true,
+    });
   });
 }
 
@@ -62,7 +64,9 @@ for (const [name, hash] of [ROUTES[0], ROUTES[1], ROUTES[5], ROUTES[7]]) {
   test(`${name} @desktop`, async ({ page }) => {
     await page.setViewportSize(DESKTOP);
     await open(page, hash);
-    await expect(page).toHaveScreenshot(`${name}-desktop.png`, { fullPage: true });
+    await expect(page).toHaveScreenshot(`${name}-desktop.png`, {
+      fullPage: true,
+    });
   });
 }
 
@@ -71,7 +75,9 @@ test("menu expanded @mobile", async ({ page }) => {
   await open(page, "#/menu");
   await page.getByRole("button", { name: "SPACE SUPPLIES" }).click();
   await expect(page.getByRole("button", { name: "LUCKY DRAW" })).toBeVisible();
-  await expect(page).toHaveScreenshot("menu-expanded-mobile.png", { fullPage: true });
+  await expect(page).toHaveScreenshot("menu-expanded-mobile.png", {
+    fullPage: true,
+  });
 });
 
 test("detail option switch @mobile", async ({ page }) => {
