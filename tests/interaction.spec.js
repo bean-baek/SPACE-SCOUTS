@@ -143,3 +143,23 @@ test("top-level menu entries reach the game and the board", async ({ page }) => 
   await expect(page).toHaveURL(/#\/board/);
   await expect(page.locator(".board")).toBeVisible();
 });
+
+test("game over shows the dizzy face, not the happy one", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 402, height: 874 });
+  await page.addInitScript(SEED_SCRIPT);
+  await page.goto("/#/game");
+
+  // If the new asset were missing, preloadAssets would reject and START would never
+  // appear — so this also guards the manifest.
+  await page.getByRole("button", { name: "START" }).click();
+
+  // Never touch the controls: the ship holds its lane and an obstacle eventually
+  // lands on it, which is a loss.
+  await expect(page.getByText("GAME OVER")).toBeVisible({ timeout: 60_000 });
+
+  const src = await page.locator(".dg-board").getAttribute("src");
+  expect(src, "a loss must show the game-over face").toContain(
+    "result_board_game_over.svg"
+  );
+});

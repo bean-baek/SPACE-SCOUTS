@@ -10,7 +10,10 @@ export const ASSETS = {
   // The boss fires the lime star from the landing page. The player's own weapon is
   // drawn as tracer lines rather than a sprite, so the two can never be confused.
   bullet: "/images/Star.svg",
+  // Two result faces: `board` is the star-eyed happy one, shown on the start screen
+  // and on a clear; `boardGameOver` is the dizzy one, shown only on a loss.
   board: `${BASE}/result_board.svg`,
+  boardGameOver: `${BASE}/result_board_game_over.svg`,
   star: `${BASE}/Dodge2.svg`,
   ob0: `${BASE}/Dodge.svg`,
   ob1: `${BASE}/Dodge1.svg`,
