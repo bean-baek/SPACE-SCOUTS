@@ -4,16 +4,18 @@ pages_build_output_dir = "dist"
 
 # Community board storage.
 #
-# Production deploys go through the Cloudflare Pages dashboard (Git integration),
-# where the D1 binding is configured under Settings -> Functions -> D1 bindings.
-# That path does NOT read this file, which is why no database_id is committed here.
+# The binding MUST be named DB — functions/api/messages.js reads env.DB. (wrangler's
+# own `d1 create` output suggests a binding named after the database; using that would
+# leave env.DB undefined and every board request would 500.)
 #
-# The `npx wrangler pages deploy dist` path DOES read this file. If you use it,
-# uncomment the block below and paste the id from `npx wrangler d1 create
-# space-scouts-board` — otherwise the Function deploys without a DB binding and
-# the board silently falls back to per-browser localStorage.
+# A database_id is not a secret — it identifies the resource, and reaching it still
+# requires account credentials — so it is committed here on purpose.
 #
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "space-scouts-board"
-# database_id = "..."
+# This file is read by `npx wrangler pages deploy dist` and by `wrangler d1 execute`.
+# Deploys made through the Pages dashboard's Git integration do NOT read it; those
+# need the same binding set under Settings -> Functions -> D1 bindings, or the
+# Function ships with no database and the board fails to load.
+[[d1_databases]]
+binding = "DB"
+database_name = "space-scouts-board"
+database_id = "d5579b6b-c10b-44a1-ae2e-bd2d4135a3ca"

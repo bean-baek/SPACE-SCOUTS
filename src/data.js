@@ -61,13 +61,18 @@ export const DATA = {
     {
       id: "mission-reports",
       label: "MISSION REPORTS",
-      // Community board isn't live yet — send visitors to the "soon" page. The board
-      // itself still works at #/board directly (for testing / admin) once ready, flip
-      // this back to "#/board".
-      link: "#/soon",
+      // The community board. Requires the D1 binding `DB` to be present in the
+      // deployment — without it the board reports that it can't load.
+      link: "#/board",
       subcategories: [],
     },
-    { id: "training-center", label: "TRAINING CENTER", subcategories: [] },
+    {
+      id: "training-center",
+      label: "TRAINING CENTER",
+      // The dodge mini-game. Fully client-side, no backend.
+      link: "#/game",
+      subcategories: [],
+    },
   ],
 
   // Grid + detail items, keyed by subcategory id.

@@ -127,3 +127,19 @@ test("clampY reserves the CTA strip at any board height", () => {
   // Top edge is untouched.
   expect(clampY(0, 768)).toBe(0.05);
 });
+
+test("top-level menu entries reach the game and the board", async ({ page }) => {
+  await page.setViewportSize({ width: 402, height: 874 });
+
+  await page.goto("/#/menu");
+  await page.reload();
+  await page.getByRole("button", { name: "TRAINING CENTER" }).click();
+  await expect(page).toHaveURL(/#\/game/);
+  await expect(page.locator(".dg-root")).toBeVisible();
+
+  await page.goto("/#/menu");
+  await page.reload();
+  await page.getByRole("button", { name: "MISSION REPORTS" }).click();
+  await expect(page).toHaveURL(/#\/board/);
+  await expect(page.locator(".board")).toBeVisible();
+});
