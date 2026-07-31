@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import Ufo, { UFO_DEFAULT } from "./Ufo.jsx";
 import { postMessage } from "./boardApi.js";
+import { clampX, clampY } from "./placement.js";
 
 const MAX = 80;
 const SEGMENTS = ["top", "middle", "bottom"];
@@ -14,8 +15,6 @@ const SAVE_ERRORS = {
   network: "You seem to be offline. Tap PLACE HERE to try again.",
 };
 
-// Keep placed UFOs a little inside the edges so they never clip the frame.
-const clampFrac = (v) => (v < 0.05 ? 0.05 : v > 0.95 ? 0.95 : v);
 
 // Two-phase flow:
 //   compose  — write the message + tint the three UFO sections
@@ -67,7 +66,8 @@ export default function UfoComposer({ onPlaced, onCancel }) {
     if (!draggingRef.current || !layerRef.current) return;
     const p = pointerFrac(e);
     const off = grabOffsetRef.current;
-    setPos({ x: clampFrac(p.x + off.x), y: clampFrac(p.y + off.y) });
+    const layerH = layerRef.current.getBoundingClientRect().height;
+    setPos({ x: clampX(p.x + off.x), y: clampY(p.y + off.y, layerH) });
   };
 
   const onPointerUp = (e) => {
