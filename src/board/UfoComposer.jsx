@@ -6,6 +6,14 @@ import { postMessage } from "./boardApi.js";
 const MAX = 80;
 const SEGMENTS = ["top", "middle", "bottom"];
 
+// Shown in place of the drag hint when a save fails. Reuses that element rather than
+// adding one, so the placing bar's layout is untouched.
+const SAVE_ERRORS = {
+  "rate-limit": "Too many reports just now — wait a moment, then try again.",
+  server: "Couldn't reach the board. Tap PLACE HERE to try again.",
+  network: "You seem to be offline. Tap PLACE HERE to try again.",
+};
+
 // Keep placed UFOs a little inside the edges so they never clip the frame.
 const clampFrac = (v) => (v < 0.05 ? 0.05 : v > 0.95 ? 0.95 : v);
 
@@ -22,6 +30,7 @@ export default function UfoComposer({ onPlaced, onCancel }) {
   const [flying, setFlying] = useState(true); // fly-up transition on; off while dragging
   const [grabbed, setGrabbed] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
 
   const layerRef = useRef(null);
   const draggingRef = useRef(false);
@@ -70,15 +79,24 @@ export default function UfoComposer({ onPlaced, onCancel }) {
   const confirm = async () => {
     if (saving) return;
     setSaving(true);
-    const row = await postMessage({
-      text: text.trim(),
-      top: colors.top,
-      middle: colors.middle,
-      bottom: colors.bottom,
-      x: pos.x,
-      y: pos.y,
-    });
-    onPlaced(row);
+    setSaveError(null);
+    try {
+      const result = await postMessage({
+        text: text.trim(),
+        top: colors.top,
+        middle: colors.middle,
+        bottom: colors.bottom,
+        x: pos.x,
+        y: pos.y,
+      });
+      // Only hand the row up on a real save. On failure the UFO stays where the
+      // visitor put it, so PLACE HERE simply retries — nothing is lost.
+      if (result.ok) onPlaced(result.row);
+      else setSaveError(SAVE_ERRORS[result.reason] ?? SAVE_ERRORS.server);
+    } finally {
+      // Always releases the button; a stuck "…" was the old failure mode.
+      setSaving(false);
+    }
   };
 
   if (step === "placing") {
@@ -97,7 +115,9 @@ export default function UfoComposer({ onPlaced, onCancel }) {
         </div>
 
         <div className="placing__bar">
-          <span className="placing__hint">Drag your UFO into place</span>
+          <span className="placing__hint" role={saveError ? "alert" : undefined}>
+            {saveError ?? "Drag your UFO into place"}
+          </span>
           <button
             type="button"
             className="placing__done"

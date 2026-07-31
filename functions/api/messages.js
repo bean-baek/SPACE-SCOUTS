@@ -1,11 +1,22 @@
 // Cloudflare Pages Function — community board API (backed by D1, binding `env.DB`).
-//   GET  /api/messages        → newest-first list of placed UFOs
-//   POST /api/messages {...}   → validate + insert one, returns the stored row
+//   GET    /api/messages        → newest-first list of placed UFOs
+//   POST   /api/messages {...}  → validate + insert one, returns the stored row
+//   DELETE /api/messages?id=…   → poster (x-edit-token) or owner (x-admin-key)
 // Runs on the same origin as the site, so no CORS handling is needed. Schema: schema.sql.
+//
+// Every handler catches its own D1 errors. Without that, a database fault surfaces as a
+// Workers HTML error page, which the client can only read as "the board is empty" —
+// indistinguishable from a working board nobody has posted to yet.
 
 const MAX_TEXT = 80;
 const LIST_LIMIT = 200;
 const HEX = /^#[0-9a-fA-F]{6}$/;
+
+// Write throttle. The endpoint is public and unauthenticated, so without this one
+// script can fill the board faster than it can be moderated by hand. Generous enough
+// that a visitor posting for themselves and a friend never notices.
+const RATE_WINDOW_MS = 10 * 60_000;
+const RATE_MAX = 5;
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -13,14 +24,33 @@ const json = (data, status = 200) =>
     headers: { "content-type": "application/json; charset=utf-8" },
   });
 
+// Rate limiting needs to recognise a repeat poster without storing who they are.
+// Hashing the IP with a server-side salt gives a stable key that cannot be reversed
+// into an address, and RATE_SALT being a secret is what stops it being brute-forced
+// (the IPv4 space is small enough to enumerate against an unsalted hash).
+async function clientKey(request, env) {
+  const ip = request.headers.get("CF-Connecting-IP") || "";
+  const salt = env.RATE_SALT || "space-scouts-unsalted";
+  const bytes = new TextEncoder().encode(`${salt}:${ip}`);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 32);
+}
+
 export async function onRequestGet({ env }) {
-  const { results } = await env.DB.prepare(
-    "SELECT id, text, top, middle, bottom, x, y, created_at " +
-      "FROM messages ORDER BY created_at DESC LIMIT ?"
-  )
-    .bind(LIST_LIMIT)
-    .all();
-  return json(results ?? []);
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT id, text, top, middle, bottom, x, y, created_at " +
+        "FROM messages ORDER BY created_at DESC LIMIT ?"
+    )
+      .bind(LIST_LIMIT)
+      .all();
+    return json(results ?? []);
+  } catch {
+    return json({ error: "db" }, 500);
+  }
 }
 
 export async function onRequestPost({ request, env }) {
@@ -47,17 +77,29 @@ export async function onRequestPost({ request, env }) {
   }
   if (!token) return json({ error: "token" }, 400);
 
-  const id = crypto.randomUUID();
-  const created_at = Date.now();
-  await env.DB.prepare(
-    "INSERT INTO messages (id, text, top, middle, bottom, x, y, created_at, token) " +
-      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  )
-    .bind(id, text, top, middle, bottom, x, y, created_at, token)
-    .run();
+  try {
+    const ipHash = await clientKey(request, env);
+    const recent = await env.DB.prepare(
+      "SELECT COUNT(*) AS n FROM messages WHERE ip_hash = ? AND created_at > ?"
+    )
+      .bind(ipHash, Date.now() - RATE_WINDOW_MS)
+      .first();
+    if ((recent?.n ?? 0) >= RATE_MAX) return json({ error: "rate limit" }, 429);
 
-  // token is never echoed back in listings; the client already holds its own copy.
-  return json({ id, text, top, middle, bottom, x, y, created_at }, 201);
+    const id = crypto.randomUUID();
+    const created_at = Date.now();
+    await env.DB.prepare(
+      "INSERT INTO messages (id, text, top, middle, bottom, x, y, created_at, token, ip_hash) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    )
+      .bind(id, text, top, middle, bottom, x, y, created_at, token, ipHash)
+      .run();
+
+    // token and ip_hash are never echoed back; the client already holds its own token.
+    return json({ id, text, top, middle, bottom, x, y, created_at }, 201);
+  } catch {
+    return json({ error: "db" }, 500);
+  }
 }
 
 export async function onRequestDelete({ request, env }) {
@@ -71,15 +113,19 @@ export async function onRequestDelete({ request, env }) {
   // repo). When present and matching, it authorises deleting ANY row — that's moderation.
   const isAdmin = Boolean(env.ADMIN_KEY) && adminKey === env.ADMIN_KEY;
 
-  if (!isAdmin) {
-    // Otherwise fall back to poster ownership: must present this row's own secret token.
-    const row = await env.DB.prepare("SELECT token FROM messages WHERE id = ?")
-      .bind(id)
-      .first();
-    if (!row) return json({ error: "not found" }, 404);
-    if (!token || token !== row.token) return json({ error: "forbidden" }, 403);
-  }
+  try {
+    if (!isAdmin) {
+      // Otherwise fall back to poster ownership: must present this row's own secret token.
+      const row = await env.DB.prepare("SELECT token FROM messages WHERE id = ?")
+        .bind(id)
+        .first();
+      if (!row) return json({ error: "not found" }, 404);
+      if (!token || token !== row.token) return json({ error: "forbidden" }, 403);
+    }
 
-  await env.DB.prepare("DELETE FROM messages WHERE id = ?").bind(id).run();
-  return json({ ok: true });
+    await env.DB.prepare("DELETE FROM messages WHERE id = ?").bind(id).run();
+    return json({ ok: true });
+  } catch {
+    return json({ error: "db" }, 500);
+  }
 }

@@ -6,6 +6,9 @@ import { defineConfig } from "@playwright/test";
 // game's starfield reproducible.
 export default defineConfig({
   testDir: "./tests",
+  // The board failure suite needs a production build (see playwright.failure.config.js);
+  // it would fail against the dev server, where boardApi never touches the network.
+  testIgnore: "board-failure.spec.js",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,

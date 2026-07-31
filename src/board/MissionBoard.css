@@ -55,6 +55,33 @@
   cursor: pointer;
 }
 
+/* Failure notices. Both elements only exist in the DOM when something actually failed,
+   so neither can affect the working board. */
+.board__error {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  margin: 0;
+  padding: 6px 14px;
+  border: var(--outline);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-round);
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.board-modal__error {
+  margin: 0;
+  font-family: var(--font-round);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
 /* Individually placed stars (star.svg) — center-anchored via translate; left/top/width
    come from the STARS table inline, so each lands at its exact reference spot. */
 
