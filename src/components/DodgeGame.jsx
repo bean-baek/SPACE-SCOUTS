@@ -130,6 +130,7 @@ export default function DodgeGame() {
 
       {!error && status === "ready" && (
         <div className="dg-overlay">
+          {/* Start screen is always the happy face — nothing has been lost yet. */}
           <img
             className="dg-board"
             src={ASSETS.board}
@@ -153,7 +154,7 @@ export default function DodgeGame() {
         <div className="dg-overlay" role="alertdialog" aria-label="Result">
           <img
             className="dg-board"
-            src={ASSETS.board}
+            src={cleared ? ASSETS.board : ASSETS.boardGameOver}
             alt=""
             aria-hidden="true"
           />
