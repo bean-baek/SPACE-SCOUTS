@@ -15,7 +15,13 @@ import "./VideoPage.css";
 // Everything below is a DETERRENT. It stops the accidental save and the casual
 // right-click, and nothing more. Do not treat it as protection for anything that would
 // actually hurt if it leaked — the file is also fetchable directly at its own URL.
-const SRC = "/KakaoTalk_20260731_114442086.mp4";
+// The original is HEVC (hvc1), which only Safari decodes — on Android Chrome and on
+// desktop Chrome/Edge/Firefox it produced a silent black frame (videoWidth stayed 0).
+// So it ships alongside an H.264 transcode: Safari picks the untouched original from
+// the first <source>, everything else falls through to the second. Regenerate the
+// fallback with `npm run build:video`.
+const SRC_HEVC = "/KakaoTalk_20260731_114442086.mp4";
+const SRC_H264 = "/KakaoTalk_20260731_114442086.h264.mp4";
 
 export default function VideoPage() {
   const videoRef = useRef(/** @type {HTMLVideoElement | null} */ (null));
@@ -56,7 +62,6 @@ export default function VideoPage() {
       <video
         ref={videoRef}
         className="vp-video"
-        src={SRC}
         autoPlay
         loop
         muted
@@ -67,8 +72,11 @@ export default function VideoPage() {
         controlsList="nodownload noplaybackrate noremoteplayback"
         disablePictureInPicture
         disableRemotePlayback
-        onContextMenu={(e) => e.preventDefault()}
-      />
+        onContextMenu={(e) => e.preventDefault()}>
+        {/* Order matters: the browser takes the first source it can decode. */}
+        <source src={SRC_HEVC} type='video/mp4; codecs="hvc1"' />
+        <source src={SRC_H264} type='video/mp4; codecs="avc1.640028"' />
+      </video>
 
       <button type="button" className="vp-sound" onClick={toggleSound}>
         {muted ? "🔇 소리 켜기" : "🔊 소리 끄기"}
