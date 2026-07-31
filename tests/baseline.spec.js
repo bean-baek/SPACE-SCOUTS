@@ -45,7 +45,8 @@ const ROUTES = [
   // Carousel items (multi-photo → dots) and a deep-linked option.
   ["detail-carousel", "#/i/standard-reward/id-card/2026"],
   ["detail-option-deeplink", "#/i/lucky-draw/pouch/핑크"],
-  ["soon", "#/soon"],
+  // #/soon is the hidden video page and gets its own test below — an autoplaying
+  // video cannot be screenshotted deterministically without masking it.
 ];
 
 for (const [name, hash] of ROUTES) {
@@ -130,4 +131,15 @@ test("board composer sheet @mobile", async ({ page }) => {
   await page.getByRole("button", { name: /HOW WAS YOUR MISSION/ }).click();
   await expect(page.locator(".composer__sheet")).toBeVisible();
   await expect(page).toHaveScreenshot("board-composer-mobile.png");
+});
+
+test("hidden video page @mobile", async ({ page }) => {
+  await page.setViewportSize(MOBILE);
+  await open(page, "#/soon");
+  await expect(page.locator(".vp-video")).toBeVisible();
+  // The video plays, so its pixels are timing-dependent — mask it and baseline the
+  // chrome around it: the back button and the sound toggle.
+  await expect(page).toHaveScreenshot("video-page-mobile.png", {
+    mask: [page.locator(".vp-video")],
+  });
 });

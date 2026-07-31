@@ -3,7 +3,6 @@ import { findSubcategory } from "./data.js";
 import Menu from "./components/Menu.jsx";
 import RewardGrid from "./components/RewardGrid.jsx";
 import ItemDetail from "./components/ItemDetail.jsx";
-import Soon from "./components/Soon.jsx";
 import MissionBoard from "./board/MissionBoard.jsx";
 
 /**
@@ -85,8 +84,11 @@ export function viewConfig(route) {
         view: <MissionBoard adminKey={route.adminKey} />,
       };
 
-    case "soon":
+    // "soon" never reaches here — App.jsx returns VideoPage for it before calling this,
+    // the same way it short-circuits landing and game. `default` is unreachable too:
+    // useHashRoute.parse resolves anything it does not recognise to "landing", which
+    // App.jsx also handles first. It stays as a total-switch guard.
     default:
-      return { ...base, title: "", view: <Soon /> };
+      return { ...base, title: "", view: null };
   }
 }

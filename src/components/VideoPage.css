@@ -1,0 +1,95 @@
+/* Hidden video page (#/soon). Fully scoped: every selector sits under .vp-root and
+   every class carries a vp- prefix, so nothing here can reach the rest of the site.
+   Mirrors the game's shell, which is the other full-bleed view inside the phone frame. */
+
+.vp-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit; /* square on mobile, matches the phone frame's 40px on desktop */
+  background: #000;
+  /* Blocks the long-press "Save Video" / "Copy" sheet on iOS and the drag-to-desktop
+     gesture. A deterrent, not protection — see the note in VideoPage.jsx. */
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.vp-root .vp-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* contain, not cover: this is someone's video, so show all of it rather than
+     cropping to fill the frame. */
+  object-fit: contain;
+  display: block;
+  pointer-events: none; /* no tap-to-scrub, and no long-press menu on the element */
+}
+
+/* ---------- back button ---------- */
+/* Same treatment as the game's exit: a translucent disc that stays legible over any
+   frame of the video. */
+.vp-root .vp-back {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 12px);
+  left: 12px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  opacity: 0.55;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.12s ease;
+}
+
+.vp-root .vp-back:hover {
+  opacity: 0.9;
+}
+
+.vp-root .vp-back:active {
+  transform: scale(0.92);
+}
+
+/* ---------- sound toggle ---------- */
+/* Autoplay only works muted, so this is the visitor's way into audio. */
+.vp-root .vp-sound {
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 18px);
+  transform: translateX(-50%);
+  z-index: 3;
+  padding: 10px 22px;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-family: var(--font-round);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.vp-root .vp-sound:active {
+  transform: translateX(-50%) scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vp-root .vp-back,
+  .vp-root .vp-sound {
+    transition: none;
+  }
+}
