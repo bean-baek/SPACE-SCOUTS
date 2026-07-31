@@ -12,7 +12,6 @@ export default function DodgeGame() {
   const gameRef = useRef(null);
   const timeRef = useRef(null);
   const labelRef = useRef(null);
-  const hudRef = useRef(null);
 
   const [assets, setAssets] = useState(null);
   const [status, setStatus] = useState("loading"); // loading | ready | playing | over | clear
@@ -45,9 +44,6 @@ export default function DodgeGame() {
         phase === "boss"
           ? `BOSS — ${Math.max(0, bossHp)} HITS LEFT`
           : "SURVIVAL TIME";
-    }
-    if (hudRef.current) {
-      hudRef.current.classList.toggle("dg-hud--boss", phase === "boss");
     }
   }, []);
 
@@ -107,7 +103,7 @@ export default function DodgeGame() {
 
       <canvas ref={canvasRef} className="dg-canvas" />
 
-      <div className="dg-hud" ref={hudRef} aria-hidden="true">
+      <div className="dg-hud" aria-hidden="true">
         <span className="dg-hud__label" ref={labelRef}>
           생존 시간
         </span>

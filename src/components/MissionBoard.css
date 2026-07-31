@@ -55,8 +55,6 @@
   cursor: pointer;
 }
 
-/* Full starfield background (bg_star.svg is one 416×728 field, not a single star).
-   Breaks out of #app's side padding so it spans the full screen width, edge to edge. */
 /* Individually placed stars (star.svg) — center-anchored via translate; left/top/width
    come from the STARS table inline, so each lands at its exact reference spot. */
 
@@ -129,7 +127,6 @@
   letter-spacing: 0.02em;
   line-height: 1;
   cursor: pointer;
-  /* box-shadow: 0 4px 0 var(--ink); */
   transition:
     transform 0.1s ease,
     box-shadow 0.1s ease;
@@ -169,7 +166,6 @@
   background: var(--paper);
   border: var(--outline);
   border-radius: var(--radius);
-  /* box-shadow: var(--shadow); */
 }
 .composer__x {
   position: absolute;
@@ -246,7 +242,6 @@
 }
 .composer__text:focus {
   outline: none;
-  /* box-shadow: 0 0 0 3px rgba(58, 57, 255, 0.2); */
 }
 .composer__count {
   position: absolute;
@@ -407,7 +402,6 @@
   border-radius: 999px;
   font-family: var(--font-round);
   font-weight: 800;
-  font-size: rem;
   letter-spacing: 0.05em;
   cursor: pointer;
 }
