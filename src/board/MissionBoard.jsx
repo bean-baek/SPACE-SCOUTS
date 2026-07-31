@@ -1,15 +1,9 @@
-import { useEffect, useState } from "react";
-import { go } from "../hooks/useHashRoute.js";
+import { useState } from "react";
 import Ufo from "./Ufo.jsx";
 import UfoComposer from "./UfoComposer.jsx";
-import {
-  getMessages,
-  getMineIds,
-  deleteMessage,
-  isAdmin,
-  setAdminKey,
-  clearAdminKey,
-} from "./boardApi.js";
+import BoardModal from "./BoardModal.jsx";
+import { useBoardMessages, useAdminMode } from "./useBoard.js";
+import { deleteMessage } from "./boardApi.js";
 import "./MissionBoard.css";
 
 // Star positions, extracted from the design SVGs and expressed as % of the board
@@ -29,58 +23,35 @@ const STARS = [
   { left: 30, top: 53, w: 10 }, // lower-left
 ];
 
+/** @param {{ adminKey?: string }} props */
 export default function MissionBoard({ adminKey }) {
-  const [ufos, setUfos] = useState([]);
+  const { ufos, loadFailed, mine, addUfo, removeUfo } = useBoardMessages();
+  const { admin, exitAdmin } = useAdminMode(adminKey);
+
   const [composing, setComposing] = useState(false);
   const [active, setActive] = useState(null); // placed UFO whose message modal is open
-  const [mine, setMine] = useState(() => getMineIds()); // ids this browser can delete
-  const [admin, setAdmin] = useState(() => isAdmin()); // owner moderation mode
-  const [loadFailed, setLoadFailed] = useState(false);
   const [deleteFailed, setDeleteFailed] = useState(false);
 
-  useEffect(() => {
-    let alive = true;
-    getMessages().then(({ rows, degraded }) => {
-      if (!alive) return;
-      setUfos(rows);
-      setLoadFailed(degraded);
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  // Owner unlock: a #/board/admin/<key> link stores the key, flips admin on, then strips
-  // the key back out of the URL so it isn't left in the address bar / history.
-  useEffect(() => {
-    if (!adminKey) return;
-    setAdminKey(adminKey);
-    setAdmin(true);
-    go("#/board");
-  }, [adminKey]);
-
-  const exitAdmin = () => {
-    clearAdminKey();
-    setAdmin(false);
-  };
-
   const handlePlaced = (row) => {
-    setUfos((prev) => [row, ...prev]);
-    setMine(getMineIds());
+    addUfo(row);
     setComposing(false);
   };
 
   const handleDelete = async (id) => {
     const ok = await deleteMessage(id);
     if (ok) {
-      setUfos((prev) => prev.filter((u) => u.id !== id));
-      setMine(getMineIds());
+      removeUfo(id);
       setActive(null);
       return;
     }
     // The row is still on the server. Keep the modal open and say so, rather than
     // closing it as if the delete had worked.
     setDeleteFailed(true);
+  };
+
+  const openMessage = (u) => {
+    setDeleteFailed(false);
+    setActive(u);
   };
 
   return (
@@ -138,10 +109,7 @@ export default function MissionBoard({ adminKey }) {
           type="button"
           className="board__ufo"
           style={{ left: `${u.x * 100}%`, top: `${u.y * 100}%` }}
-          onClick={() => {
-            setDeleteFailed(false);
-            setActive(u);
-          }}
+          onClick={() => openMessage(u)}
           aria-label="Read this mission report">
           <Ufo
             colors={{ top: u.top, middle: u.middle, bottom: u.bottom }}
@@ -168,52 +136,13 @@ export default function MissionBoard({ adminKey }) {
       )}
 
       {active && (
-        <div
-          className="board-modal"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setActive(null)}>
-          <div
-            className="board-modal__card"
-            onClick={(e) => e.stopPropagation()}>
-            <Ufo
-              colors={{
-                top: active.top,
-                middle: active.middle,
-                bottom: active.bottom,
-              }}
-              size={92}
-            />
-            <p className="board-modal__text">{active.text}</p>
-            <img
-              className="board-modal__char"
-              src="/images/message_character.svg"
-              alt=""
-              aria-hidden="true"
-            />
-            {deleteFailed && (
-              <p className="board-modal__error" role="alert">
-                Couldn't delete — try again.
-              </p>
-            )}
-            <div className="board-modal__actions">
-              {(admin || mine.has(active.id)) && (
-                <button
-                  type="button"
-                  className="board-modal__delete"
-                  onClick={() => handleDelete(active.id)}>
-                  DELETE
-                </button>
-              )}
-              <button
-                type="button"
-                className="board-modal__close"
-                onClick={() => setActive(null)}>
-                CLOSE
-              </button>
-            </div>
-          </div>
-        </div>
+        <BoardModal
+          message={active}
+          canDelete={admin || mine.has(active.id)}
+          deleteFailed={deleteFailed}
+          onDelete={handleDelete}
+          onClose={() => setActive(null)}
+        />
       )}
     </section>
   );

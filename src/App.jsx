@@ -1,13 +1,8 @@
-import { useHashRoute, go } from "./hooks/useHashRoute.js";
-import { findSubcategory } from "./data.js";
+import { useHashRoute } from "./hooks/useHashRoute.js";
+import { viewConfig } from "./viewConfig.jsx";
 import Appbar from "./components/Appbar.jsx";
 import Landing from "./components/Landing.jsx";
-import Menu from "./components/Menu.jsx";
-import RewardGrid from "./components/RewardGrid.jsx";
-import ItemDetail from "./components/ItemDetail.jsx";
-import Soon from "./components/Soon.jsx";
 import DodgeGame from "./components/DodgeGame.jsx";
-import MissionBoard from "./board/MissionBoard.jsx";
 
 export default function App() {
   const route = useHashRoute();
@@ -31,64 +26,7 @@ export default function App() {
     );
   }
 
-  // "grid" and "detail" both live inside a subcategory, so both need its
-  // label + theme color for the appbar — resolved once here instead of
-  // twice in the switch below.
-  const found = route.subId ? findSubcategory(route.subId) : null;
-
-  let title = "SPACE SCOUTS";
-  let pageColor; // single source of truth — flows to both the appbar and the page body
-  let appbarColor; // appbar only changes color on detail pages
-  let titleBold = false; // grid pages have bold title
-  let iconActive = 2;
-  let iconLabel = "Home";
-  let onIconClick;
-  let view;
-
-  if (found) {
-    title = found.sub.label;
-    pageColor = found.sub.color;
-  } else if (route.subId) {
-    title = route.subId;
-    pageColor = "pink";
-  }
-
-  switch (route.view) {
-    case "menu":
-      title = "";
-      view = <Menu />;
-      break;
-    case "grid":
-      titleBold = true;
-      onIconClick = () => go("#/menu");
-      view = <RewardGrid subId={route.subId} />;
-      break;
-    case "detail":
-      iconActive = 0;
-      iconLabel = "Back to list";
-      onIconClick = () => go(`#/c/${route.subId}`);
-      appbarColor = pageColor;
-      view = (
-        <ItemDetail
-          key={route.itemId}
-          subId={route.subId}
-          itemId={route.itemId}
-          option={route.option}
-          color={pageColor}
-        />
-      );
-      break;
-    case "board":
-      title = "MISSION REPORT";
-      titleBold = true;
-      onIconClick = () => go("#/menu");
-      view = <MissionBoard adminKey={route.adminKey} />;
-      break;
-    case "soon":
-    default:
-      title = "";
-      view = <Soon />;
-  }
+  const { view, ...chrome } = viewConfig(route);
 
   return (
     <div className="phone">
@@ -98,12 +36,12 @@ export default function App() {
         <img className="sparkles" src="/images/sparkle.png" alt="" aria-hidden="true" />
       )}
       <Appbar
-        title={title}
-        color={appbarColor}
-        titleBold={titleBold}
-        iconActive={iconActive}
-        iconLabel={iconLabel}
-        onIconClick={onIconClick}
+        title={chrome.title}
+        color={chrome.appbarColor}
+        titleBold={chrome.titleBold}
+        iconActive={chrome.iconActive}
+        iconLabel={chrome.iconLabel}
+        onIconClick={chrome.onIconClick}
       />
       <main id="app">{view}</main>
     </div>
