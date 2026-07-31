@@ -104,8 +104,11 @@ export default function DodgeGame() {
       <canvas ref={canvasRef} className="dg-canvas" />
 
       <div className="dg-hud" aria-hidden="true">
+        {/* Must match the string handleTick writes, or the label flips on the first
+            tick. The game's status text is English throughout (GAME OVER, STAGE
+            CLEAR!); only the prose copy is Korean. */}
         <span className="dg-hud__label" ref={labelRef}>
-          생존 시간
+          SURVIVAL TIME
         </span>
         <span className="dg-hud__time" ref={timeRef}>
           0.0

@@ -309,10 +309,16 @@ body {
   gap: 2%;
   padding: 10% 5%;
 }
+/* Bottom scroll room. It must not be a hit target: `gap: 2%` makes the row gaps resolve
+   against the grid's own block size, which is circular — the box is sized with the gaps
+   counted as zero, then the rows are laid out ~318px past it. The tiles paint correctly
+   but hang outside their container, so this spacer lands on top of the last rows and was
+   swallowing their taps. */
 .grid-view::after {
   content: "";
   height: 300px;
   flex-shrink: 0;
+  pointer-events: none;
 }
 .grid__tile {
   aspect-ratio: 1 / 1;
