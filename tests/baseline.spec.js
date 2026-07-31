@@ -94,12 +94,19 @@ test("game ready overlay @mobile", async ({ page }) => {
   await page.setViewportSize(MOBILE);
   await open(page, "#/game");
   await expect(page.getByRole("button", { name: "START" })).toBeVisible();
-  // The canvas runs its own rAF loop, so its pixels are timing-dependent even
-  // with a seeded PRNG. Mask it and baseline the chrome around it: HUD, back
-  // button, overlay, board art, title, hint copy, START button.
-  await expect(page).toHaveScreenshot("game-ready-mobile.png", {
-    mask: [page.locator(".dg-canvas")],
-  });
+  // Assert the tuning numbers as text, not pixels. Both are two digits, so changing
+  // one alters a single glyph — far fewer pixels than maxDiffPixelRatio allows, and
+  // the screenshot below silently passed on a real BOSS_HP change until this existed.
+  await expect(page.locator(".dg-hint")).toContainText("20초 후");
+  await expect(page.locator(".dg-hint")).toContainText("50회 명중");
+  // Shoot the overlay element, NOT the page-with-canvas-masked. .dg-canvas is
+  // full-bleed, so masking it painted a solid pink rectangle over the entire
+  // viewport — overlay included — and this assertion covered nothing at all for as
+  // long as it existed. The overlay is its own layer above the canvas, so clipping
+  // to it excludes the rAF loop without a mask: board art, title, hint, START.
+  await expect(page.locator(".dg-overlay")).toHaveScreenshot(
+    "game-ready-mobile.png"
+  );
 });
 
 test("board with seeded ufos @mobile", async ({ page }) => {
