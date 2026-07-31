@@ -13,6 +13,24 @@
 // if we hold its token, and the server requires that token to delete. That gives
 // "delete your own" without a login.
 
+/**
+ * One placed UFO, exactly as the `messages` table stores it (see schema.sql) and as
+ * GET /api/messages returns it. `token` and `ip_hash` exist server-side but are never
+ * echoed back, so they are absent here on purpose.
+ *
+ * @typedef {object} BoardMessage
+ * @property {string} id
+ * @property {string} text        <= 80 chars, validated server-side
+ * @property {string} top         #RRGGBB — dome
+ * @property {string} middle      #RRGGBB — saucer disc
+ * @property {string} bottom      #RRGGBB — underside
+ * @property {number} x           0..1 fraction of board width
+ * @property {number} y           0..1 fraction of board height
+ * @property {number} created_at  epoch ms
+ */
+
+/** @typedef {Pick<BoardMessage, "text"|"top"|"middle"|"bottom"|"x"|"y">} NewBoardMessage */
+
 const API = "/api/messages";
 const LS_KEY = "spacescouts:board";
 const MINE_KEY = "spacescouts:mine";
@@ -26,7 +44,7 @@ const USE_API = !import.meta.env.DEV;
 
 function readJson(key) {
   try {
-    return JSON.parse(localStorage.getItem(key)) || null;
+    return JSON.parse(localStorage.getItem(key) ?? "null") || null;
   } catch {
     return null;
   }
@@ -39,6 +57,7 @@ function writeJson(key, value) {
   }
 }
 
+/** @returns {BoardMessage[]} */
 const readLocal = () => readJson(LS_KEY) || [];
 const writeLocal = (list) => writeJson(LS_KEY, list);
 const readMine = () => readJson(MINE_KEY) || {};
@@ -64,6 +83,7 @@ function forgetMine(id) {
 }
 
 // The set of ids this browser posted (and can therefore delete).
+/** @returns {Set<string>} */
 export function getMineIds() {
   return new Set(Object.keys(readMine()));
 }
@@ -96,6 +116,11 @@ export function clearAdminKey() {
 export const isAdmin = () => Boolean(getAdminKey());
 
 // Dev-only write to the localStorage stand-in.
+/**
+ * @param {NewBoardMessage} msg
+ * @param {string} token
+ * @returns {BoardMessage}
+ */
 function saveLocal(msg, token) {
   const id = randomToken();
   const row = { ...msg, id, created_at: Date.now() };
@@ -109,6 +134,7 @@ function saveLocal(msg, token) {
 // → { rows, degraded }. `degraded` means the API was meant to answer and didn't, so
 // `rows` is whatever this browser had rather than the real board. Callers use it to
 // tell "nobody has posted yet" apart from "we couldn't reach the board".
+/** @returns {Promise<{rows: BoardMessage[], degraded: boolean}>} */
 export async function getMessages() {
   if (!USE_API) return { rows: readLocal(), degraded: false };
   try {
@@ -125,6 +151,10 @@ export async function getMessages() {
 // → { ok: true, row } | { ok: false, reason: "rate-limit" | "server" | "network" }
 // A production failure is reported, never mirrored locally: a UFO that exists only in
 // the poster's own browser looks identical to a posted one until they reload.
+/**
+ * @param {NewBoardMessage} msg
+ * @returns {Promise<{ok: true, row: BoardMessage} | {ok: false, reason: "rate-limit"|"server"|"network"}>}
+ */
 export async function postMessage(msg) {
   const token = randomToken();
   if (!USE_API) return { ok: true, row: saveLocal(msg, token) };
@@ -148,6 +178,10 @@ export async function postMessage(msg) {
 // Removes a UFO. Authority is either the per-UFO token (poster) or the admin key (owner).
 // Returns true ONLY when the row is really gone, so a failure leaves the UFO on screen
 // instead of vanishing it locally and letting it return on the next reload.
+/**
+ * @param {string} id
+ * @returns {Promise<boolean>} true only when the row is really gone
+ */
 export async function deleteMessage(id) {
   const token = readMine()[id];
   const admin = getAdminKey();

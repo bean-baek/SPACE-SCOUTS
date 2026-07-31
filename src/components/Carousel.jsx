@@ -4,7 +4,9 @@ import Tile from "./Tile.jsx";
 // Horizontal, swipeable photo slider for the item detail image tile.
 // `images` is an array of photo paths (e.g. [front, back]); a single-photo
 // array just renders that one photo with no dots.
+/** @param {{ images: string[], alt: string }} props */
 export default function Carousel({ images, alt }) {
+  /** @type {import('react').RefObject<HTMLDivElement | null>} */
   const trackRef = useRef(null);
   const [slide, setSlide] = useState(0);
 

@@ -48,7 +48,7 @@ export function viewConfig(route) {
     case "grid":
       return {
         ...base,
-        title: subTitle,
+        title: subTitle ?? "",
         titleBold: true,
         onIconClick: () => go("#/menu"),
         view: <RewardGrid subId={route.subId} />,
@@ -57,7 +57,7 @@ export function viewConfig(route) {
     case "detail":
       return {
         ...base,
-        title: subTitle,
+        title: subTitle ?? "",
         // The bar picks up the subcategory colour so it reads as one surface with
         // the themed panel below it.
         appbarColor: pageColor,

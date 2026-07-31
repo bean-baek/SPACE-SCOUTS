@@ -2,6 +2,16 @@ import { go } from "../hooks/useHashRoute.js";
 import ToggleIcon from "./ToggleIcon.jsx";
 import ThemedSurface from "./ThemedSurface.jsx";
 
+/**
+ * @param {{
+ *   title: string,
+ *   color?: string,
+ *   titleBold?: boolean,
+ *   iconActive?: number,
+ *   iconLabel?: string,
+ *   onIconClick?: () => void,
+ * }} props
+ */
 export default function Appbar({
   title,
   color,

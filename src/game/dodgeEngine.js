@@ -86,6 +86,45 @@ function overlaps(ax, ay, ar, bx, by, br) {
   return dx * dx + dy * dy < rr * rr;
 }
 
+/**
+ * A falling obstacle, or one of the boss's bullets — same fields, different art.
+ * @typedef {object} Mover
+ * @property {HTMLImageElement} [img] absent for bullets, which all share one sprite
+ * @property {number} w @property {number} h @property {number} r hit radius
+ * @property {number} x @property {number} y
+ * @property {number} vx @property {number} vy px/sec
+ * @property {number} rot @property {number} vrot radians, radians/sec
+ */
+
+/**
+ * @typedef {object} Boss
+ * @property {number} x @property {number} y
+ * @property {number} box sprite box, px  @property {number} w @property {number} h
+ * @property {number} age seconds since it flew in
+ * @property {number} gun  countdown to the next aimed shot
+ * @property {number} burst countdown to the next radial burst
+ * @property {number} hp
+ * @property {boolean} hurt HP bar stays hidden until the first clean hit
+ * @property {number} flash remaining seconds of the on-hit scale punch
+ */
+
+/**
+ * The whole mutable world. Recreated by reset() on every run; nothing outside this
+ * module ever sees it.
+ *
+ * @typedef {object} World
+ * @property {number} t elapsed seconds
+ * @property {boolean} over
+ * @property {{x: number, y: number, tilt: number}} player
+ * @property {Mover[]} obstacles
+ * @property {Mover[]} bullets  incoming, from the boss
+ * @property {{x: number, y: number, vy: number}[]} shots  outgoing, from the player
+ * @property {{x: number, y: number, vx: number, vy: number, life: number}[]} sparks
+ * @property {Boss | null} boss
+ * @property {number} spawn countdown to the next obstacle
+ * @property {number} fire  countdown to the player's next shot
+ */
+
 export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
   const ctx = canvas.getContext("2d", { alpha: false });
 
@@ -96,8 +135,13 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
   let last = 0;
   let running = false;
   let destroyed = false;
+  /** @type {{x: number, y: number, r: number, v: number, a: number}[]} */
   let stars = [];
-  let s = null; // the whole mutable world
+  // The whole mutable world. Typed non-null because reset() runs before anything
+  // reads it and the loop only runs while it exists — guarding every access in the
+  // hot path would cost more clarity than it buys.
+  /** @type {World} */
+  let s;
 
   const keys = new Set();
   // Only x is tracked: the ship is pinned to its lane, so the y of a drag is ignored.
@@ -219,6 +263,7 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
 
   function fireAimed() {
     const b = s.boss;
+    if (!b) return; // only ever called during the boss phase
     const aim = Math.atan2(s.player.y - b.y, s.player.x - b.x);
     // A twin stream with jitter reads as a machine-gun rather than a laser line.
     for (const off of [-GUN_SPREAD, GUN_SPREAD]) {
@@ -232,6 +277,7 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
 
   function fireBurst() {
     const b = s.boss;
+    if (!b) return;
     const skew = Math.random() * Math.PI * 2;
     for (let i = 0; i < BURST_COUNT; i++) {
       spawnBullet(b.x, b.y + b.box * 0.22, skew + (i / BURST_COUNT) * Math.PI * 2);
@@ -289,6 +335,7 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
 
   function updateBoss(dt) {
     const b = s.boss;
+    if (!b) return;
     b.age += dt;
     if (b.flash > 0) b.flash -= dt;
     b.y += (H * 0.18 - b.y) * approach(3, dt);
@@ -474,6 +521,7 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
 
   function drawBoss() {
     const b = s.boss;
+    if (!b) return;
     // A brief scale punch on hit — cheaper than a tint and reads just as clearly.
     const punch = b.flash > 0 ? 1 + b.flash * 0.35 : 1;
     sprite(assets.boss, b.x, b.y, b.w * punch, b.h * punch, 0);
@@ -626,7 +674,7 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
       canvas.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerup", onPointerUp);
       canvas.removeEventListener("pointercancel", onPointerUp);
-      s = null;
+      s = /** @type {any} */ (null);
     },
   };
 }
