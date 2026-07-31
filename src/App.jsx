@@ -7,7 +7,7 @@ import RewardGrid from "./components/RewardGrid.jsx";
 import ItemDetail from "./components/ItemDetail.jsx";
 import Soon from "./components/Soon.jsx";
 import DodgeGame from "./components/DodgeGame.jsx";
-import MissionBoard from "./components/MissionBoard.jsx";
+import MissionBoard from "./board/MissionBoard.jsx";
 
 export default function App() {
   const route = useHashRoute();

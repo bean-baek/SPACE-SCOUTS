@@ -2,9 +2,18 @@ name = "space-scouts"
 compatibility_date = "2025-01-01"
 pages_build_output_dir = "dist"
 
-# Community board storage. Create the DB, then paste its id below:
-#   npx wrangler d1 create space-scouts-board
-[[d1_databases]]
-binding = "DB"
-database_name = "space-scouts-board"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+# Community board storage.
+#
+# Production deploys go through the Cloudflare Pages dashboard (Git integration),
+# where the D1 binding is configured under Settings -> Functions -> D1 bindings.
+# That path does NOT read this file, which is why no database_id is committed here.
+#
+# The `npx wrangler pages deploy dist` path DOES read this file. If you use it,
+# uncomment the block below and paste the id from `npx wrangler d1 create
+# space-scouts-board` — otherwise the Function deploys without a DB binding and
+# the board silently falls back to per-browser localStorage.
+#
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "space-scouts-board"
+# database_id = "..."
