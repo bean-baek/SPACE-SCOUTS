@@ -400,6 +400,17 @@ export const DATA = {
   },
 };
 
+// The single reader of the image contract described at the top of this file.
+// An item's photo for a given option is `images[option]` when that option has its
+// own photo, otherwise the item's default `image`. Either may be one path or an
+// array (front/back), so callers always get an array — empty when there is no
+// photo at all, which is what makes Tile fall back to the grey placeholder.
+export function resolveImages(item, option) {
+  const raw = (option !== undefined ? item.images?.[option] : undefined) ?? item.image;
+  if (Array.isArray(raw)) return raw;
+  return raw ? [raw] : [];
+}
+
 export function findSubcategory(subId) {
   for (const cat of DATA.categories) {
     const sub = cat.subcategories.find((s) => s.id === subId);

@@ -1,4 +1,4 @@
-import { DATA } from "../data.js";
+import { DATA, resolveImages } from "../data.js";
 import { go } from "../hooks/useHashRoute.js";
 import Tile from "./Tile.jsx";
 
@@ -24,12 +24,12 @@ function buildTiles(subId) {
   for (const item of items) {
     const options = item.options?.length ? item.options : [undefined];
     for (const option of options) {
-      const raw = option !== undefined ? (item.images?.[option] ?? item.image) : item.image;
       tiles.push({
         key: `${item.id}:${option ?? "default"}`,
         itemId: item.id,
         option,
-        src: Array.isArray(raw) ? raw[0] : raw,
+        // The grid shows one photo per tile; a front/back pair leads with the front.
+        src: resolveImages(item, option)[0],
         alt: option ? `${item.name} – ${option}` : item.name,
       });
     }
