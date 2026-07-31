@@ -17,19 +17,6 @@
   --pad: 18px;
   --font-round: "Albert Sans", sans-serif;
   --font-mono: "42Dot KR", sans-serif;
-
-  /* Appbar metrics. Height is derived, not guessed: vertical padding twice
-     over, plus 34px for the tallest child (the 30px toggle icon + its 2px
-     padding), plus the notch inset. Deriving it means the landing hero below
-     stays glued to the bar even if this padding is retuned. */
-  --appbar-pad-y: 20px;
-  --appbar-h: calc(env(safe-area-inset-top) + (var(--appbar-pad-y) * 2) + 34px);
-
-  /* How far the landing photo starts below the top of the phone frame. The
-     band it leaves is what the SPACE SCOUTS wordmark reads against, so the
-     photo begins where the appbar ends. Raise/lower this one value to give
-     the wordmark more or less room. */
-  --hero-inset: var(--appbar-h);
 }
 
 * {
@@ -251,15 +238,6 @@ body {
   max-width: 92px;
   z-index: 2;
   animation: mascot-spin 5s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @keyframes mascot-spin {

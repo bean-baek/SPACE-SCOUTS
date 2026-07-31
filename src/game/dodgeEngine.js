@@ -100,7 +100,8 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
   let s = null; // the whole mutable world
 
   const keys = new Set();
-  const pointer = { active: false, id: null, x: 0, y: 0 };
+  // Only x is tracked: the ship is pinned to its lane, so the y of a drag is ignored.
+  const pointer = { active: false, id: null, x: 0 };
 
   // ---------- sizing ----------
 
@@ -573,7 +574,6 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
   function trackPointer(e) {
     const rect = canvas.getBoundingClientRect();
     pointer.x = e.clientX - rect.left;
-    pointer.y = e.clientY - rect.top;
   }
 
   function onPointerDown(e) {
@@ -615,7 +615,6 @@ export function createDodgeGame(canvas, { assets, onTick, onEnd }) {
 
   return {
     start,
-    restart: start,
     destroy() {
       destroyed = true;
       stop();

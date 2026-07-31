@@ -97,10 +97,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.dg-root .dg-hud--boss .dg-hud__label {
-  color: var(--dg-accent);
-}
-
 /* ---------- overlays (start / result) ---------- */
 
 .dg-root .dg-overlay {

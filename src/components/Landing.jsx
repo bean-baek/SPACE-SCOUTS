@@ -41,16 +41,6 @@ export default function Landing() {
         onTouchEnd={() => handleStarMouseUp("left")}
       />
       <img
-        className={`landing__star ${activeStars.middle ? "active" : ""}`}
-        src="/images/Star.svg"
-        alt="Star"
-        onMouseDown={() => handleStarMouseDown("middle")}
-        onMouseUp={() => handleStarMouseUp("middle")}
-        onMouseLeave={() => handleStarMouseUp("middle")}
-        onTouchStart={() => handleStarMouseDown("middle")}
-        onTouchEnd={() => handleStarMouseUp("middle")}
-      />
-      <img
         className={`landing__star ${activeStars.right ? "active" : ""}`}
         src="/images/Star.svg"
         alt="Star"
