@@ -1,4 +1,9 @@
 <!doctype html>
+<!-- lang stays "en" on purpose. Switching it to "ko" is semantically right — the copy
+     is Korean, and it changes what screen readers announce — but it also makes the
+     browser render Korean glyphs noticeably larger and wider, which reflows the item
+     description panels. That is a design decision, not a technical one. og:locale
+     below already tells link previews this is Korean content. -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,7 +11,40 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#CBFF88" />
+
     <title>Space Scouts — RYO Birthday Cafe</title>
+    <meta
+      name="description"
+      content="NCT WISH 료 생일 카페 스페이스 스카우트. 보급품을 확인하고, 미션 리포트를 남기고, 긴급 탐사 미션에 참여하세요." />
+
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="apple-touch-icon" href="/images/favicon.svg" />
+
+    <!-- Link previews (KakaoTalk, X, Discord, iMessage…). og:image and og:url have to be
+         absolute URLs, so they name the final domain — these only resolve once
+         spacescouts.store points at this deployment. KakaoTalk caches a URL's preview
+         hard and keeps serving a stale one, so clear it at
+         https://developers.kakao.com/tool/debugger/sharing after changing anything here. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Space Scouts" />
+    <meta property="og:title" content="Space Scouts — RYO Birthday Cafe" />
+    <meta
+      property="og:description"
+      content="NCT WISH 료 생일 카페 스페이스 스카우트. 보급품을 확인하고, 미션 리포트를 남겨 보세요." />
+    <meta property="og:url" content="https://spacescouts.store/" />
+    <meta property="og:image" content="https://spacescouts.store/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Space Scouts — RYO Birthday Cafe" />
+    <meta property="og:locale" content="ko_KR" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Space Scouts — RYO Birthday Cafe" />
+    <meta
+      name="twitter:description"
+      content="NCT WISH 료 생일 카페 스페이스 스카우트. 보급품을 확인하고, 미션 리포트를 남겨 보세요." />
+    <meta name="twitter:image" content="https://spacescouts.store/og-image.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
