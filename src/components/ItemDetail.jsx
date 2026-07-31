@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DATA } from "../data.js";
+import { DATA, resolveImages } from "../data.js";
 import Carousel from "./Carousel.jsx";
 import ThemedSurface from "./ThemedSurface.jsx";
 
@@ -11,6 +11,9 @@ function chipColumns(count) {
   if (count % 2 === 0) return 2;
   return 3;
 }
+
+// `desc` is authored as either one string or an array of paragraphs.
+const toArray = (v) => (Array.isArray(v) ? v : v ? [v] : []);
 
 export default function ItemDetail({ subId, itemId, option, color }) {
   const items = DATA.items[subId] || [];
@@ -27,13 +30,8 @@ export default function ItemDetail({ subId, itemId, option, color }) {
     );
   }
 
-  const paragraphs = Array.isArray(item.desc)
-    ? item.desc
-    : item.desc
-      ? [item.desc]
-      : [];
-  const rawImages = item.images?.[selected] ?? item.image;
-  const images = Array.isArray(rawImages) ? rawImages : rawImages ? [rawImages] : [];
+  const paragraphs = toArray(item.desc);
+  const images = resolveImages(item, selected);
   const alt = selected ? `${item.name} – ${selected}` : item.name;
 
   return (
