@@ -1,7 +1,12 @@
 // Board data client. In production it talks to the Cloudflare Pages Function at
 // /api/messages (backed by D1). Under plain `vite dev` there is no Function, so every
-// call falls back to localStorage — the compose → place → read → delete flow stays fully
+// call uses localStorage instead — the compose → place → read → delete flow stays fully
 // testable locally, and the same code hits the real shared board once deployed.
+//
+// The localStorage path is a DEV SUBSTITUTE, not a production safety net. A failed
+// write in production reports failure; it does not quietly succeed against this
+// browser's own storage. Writing locally and returning success is indistinguishable
+// from working, right up until the visitor reloads and their message is gone.
 //
 // "Mine" tracking: there are no accounts, so each post carries a client-generated secret
 // token. We remember {id: token} in localStorage; a UFO is deletable by this browser only
@@ -90,37 +95,8 @@ export function clearAdminKey() {
 }
 export const isAdmin = () => Boolean(getAdminKey());
 
-export async function getMessages() {
-  if (USE_API) {
-    try {
-      const res = await fetch(API, { headers: { accept: "application/json" } });
-      if (!res.ok) throw new Error(`GET ${res.status}`);
-      return await res.json();
-    } catch {
-      /* fall through to local mirror */
-    }
-  }
-  return readLocal();
-}
-
-// msg: { text, top, middle, bottom, x, y }. Returns the stored row (with id + created_at).
-export async function postMessage(msg) {
-  const token = randomToken();
-  if (USE_API) {
-    try {
-      const res = await fetch(API, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ...msg, token }),
-      });
-      if (!res.ok) throw new Error(`POST ${res.status}`);
-      const row = await res.json();
-      rememberMine(row.id, token);
-      return row;
-    } catch {
-      /* fall through to local mirror */
-    }
-  }
+// Dev-only write to the localStorage stand-in.
+function saveLocal(msg, token) {
   const id = randomToken();
   const row = { ...msg, id, created_at: Date.now() };
   const list = readLocal();
@@ -130,31 +106,74 @@ export async function postMessage(msg) {
   return row;
 }
 
+// → { rows, degraded }. `degraded` means the API was meant to answer and didn't, so
+// `rows` is whatever this browser had rather than the real board. Callers use it to
+// tell "nobody has posted yet" apart from "we couldn't reach the board".
+export async function getMessages() {
+  if (!USE_API) return { rows: readLocal(), degraded: false };
+  try {
+    const res = await fetch(API, { headers: { accept: "application/json" } });
+    if (!res.ok) throw new Error(`GET ${res.status}`);
+    const rows = await res.json();
+    return { rows: Array.isArray(rows) ? rows : [], degraded: false };
+  } catch {
+    return { rows: readLocal(), degraded: true };
+  }
+}
+
+// msg: { text, top, middle, bottom, x, y }.
+// → { ok: true, row } | { ok: false, reason: "rate-limit" | "server" | "network" }
+// A production failure is reported, never mirrored locally: a UFO that exists only in
+// the poster's own browser looks identical to a posted one until they reload.
+export async function postMessage(msg) {
+  const token = randomToken();
+  if (!USE_API) return { ok: true, row: saveLocal(msg, token) };
+
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...msg, token }),
+    });
+    if (res.status === 429) return { ok: false, reason: "rate-limit" };
+    if (!res.ok) return { ok: false, reason: "server" };
+    const row = await res.json();
+    rememberMine(row.id, token);
+    return { ok: true, row };
+  } catch {
+    return { ok: false, reason: "network" };
+  }
+}
+
 // Removes a UFO. Authority is either the per-UFO token (poster) or the admin key (owner).
-// No-op-safe if this browser has neither.
+// Returns true ONLY when the row is really gone, so a failure leaves the UFO on screen
+// instead of vanishing it locally and letting it return on the next reload.
 export async function deleteMessage(id) {
   const token = readMine()[id];
   const admin = getAdminKey();
   if (!token && !admin) return false;
 
-  if (USE_API) {
-    const headers = {};
-    if (token) headers["x-edit-token"] = token;
-    if (admin) headers["x-admin-key"] = admin; // server prefers admin when it matches
-    try {
-      const res = await fetch(`${API}?id=${encodeURIComponent(id)}`, {
-        method: "DELETE",
-        headers,
-      });
-      // A real server 403 means the auth was rejected — keep the UFO, report failure.
-      if (res.status === 403) return false;
-    } catch {
-      /* network error — fall through to the local mirror */
-    }
+  if (!USE_API) {
+    writeLocal(readLocal().filter((m) => m.id !== id));
+    forgetMine(id);
+    return true;
   }
 
-  // Anything else (200 deleted, 404 already-gone, or no API at all) → it's gone for us:
-  // drop it from this browser's local board. Harmless no-op when it only lived server-side.
+  const headers = {};
+  if (token) headers["x-edit-token"] = token;
+  if (admin) headers["x-admin-key"] = admin; // server prefers admin when it matches
+  try {
+    const res = await fetch(`${API}?id=${encodeURIComponent(id)}`, {
+      method: "DELETE",
+      headers,
+    });
+    // 404 means it was already gone — the caller's intent is satisfied. Anything else
+    // that isn't a 2xx (403 rejected, 500 broken) means the row is still there.
+    if (!res.ok && res.status !== 404) return false;
+  } catch {
+    return false; // never reached the server; the row is almost certainly still there
+  }
+
   writeLocal(readLocal().filter((m) => m.id !== id));
   forgetMine(id);
   return true;
