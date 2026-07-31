@@ -115,6 +115,16 @@ export default function MissionBoard({ adminKey }) {
         />
       ))}
 
+      {/* Two layers, one CSS box. bg_character_mission_report.svg draws the character as
+          an unfilled blue outline; the fill is a separate file padded into that same
+          374×228 viewBox, so identical positioning keeps them registered at any size.
+          Fill first — the linework has to sit on top of it. */}
+      <img
+        className="board__decor"
+        src="/images/community/bg_character_fill.svg"
+        alt=""
+        aria-hidden="true"
+      />
       <img
         className="board__decor"
         src="/images/community/bg_character_mission_report.svg"
