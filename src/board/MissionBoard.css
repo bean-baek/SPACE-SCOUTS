@@ -2,26 +2,20 @@
    design tokens (--ink outlines, --lime, chunky radii, flat pressed shadows). */
 
 /* ---------- recolorable UFO ---------- */
-/* .ufo width is set inline; aspect-ratio gives the height. The blue line-art fills the
-   box; the colour fill SVG is inset onto the saucer region of that outline. */
+/* .ufo width is set inline; aspect-ratio gives the height. Both layers now share
+   ufo_lines.svg's 181×147 viewBox (the fill paths are transformed into it inside
+   Ufo.jsx), so they are registered by construction — no CSS nudging, and they cannot
+   drift apart at any size. */
 .ufo {
   position: relative;
   display: inline-block;
-  aspect-ratio: 53 / 43;
+  aspect-ratio: 181 / 147;
   line-height: 0;
 }
-.ufo__lines {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
+.ufo__lines,
 .ufo__fill {
   position: absolute;
-  /* tuned visually against ufo_lines.svg so the fill tucks just under the outline at
-     every size — no colour spilling past the blue linework. */
-  top: 5%;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;

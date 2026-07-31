@@ -3,6 +3,7 @@ import { viewConfig } from "./viewConfig.jsx";
 import Appbar from "./components/Appbar.jsx";
 import Landing from "./components/Landing.jsx";
 import DodgeGame from "./components/DodgeGame.jsx";
+import VideoPage from "./components/VideoPage.jsx";
 
 export default function App() {
   const route = useHashRoute();
@@ -26,6 +27,16 @@ export default function App() {
     );
   }
 
+  // "soon" 페이지를 전체 화면 비디오로 대체합니다.
+  // 이 페이지도 다른 UI 없이 전체 화면을 사용하므로 여기서 먼저 처리합니다.
+  if (route.view === "soon") {
+    return (
+      <div className="phone">
+        <VideoPage />
+      </div>
+    );
+  }
+
   const { view, ...chrome } = viewConfig(route);
 
   return (
@@ -33,7 +44,12 @@ export default function App() {
       {/* The board draws its own starfield (individually placed star.svg copies); skip
           the global sparkle overlay there so the two star layers don't stack. */}
       {route.view !== "board" && (
-        <img className="sparkles" src="/images/sparkle.png" alt="" aria-hidden="true" />
+        <img
+          className="sparkles"
+          src="/images/sparkle.png"
+          alt=""
+          aria-hidden="true"
+        />
       )}
       <Appbar
         title={chrome.title}

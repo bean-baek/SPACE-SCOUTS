@@ -1,14 +1,26 @@
-// Recolorable UFO. The three fill paths come straight from
-// design/ufo_color.svg (viewBox 49×35) — each one is a section the
-// visitor can tint. The blue line-art (ufo_lines.svg, viewBox 53×43, with antennae and
-// windows) is laid over the top, static. The two source files have different boxes, so
-// the fill SVG is inset onto the saucer region of the outline; that inset (in .ufo__fill,
-// MissionBoard.css) was tuned visually so no fill colour spills past the linework.
+// Recolorable UFO. The three fill paths come straight from design/ufo_color.svg
+// (viewBox 49×35) — each one is a section the visitor can tint. The blue line-art
+// (ufo_lines.svg, viewBox 181×147, with antennae and windows) is laid over the top,
+// static.
+//
+// The two source files are drawn in different coordinate spaces, so the fill paths are
+// transformed into the line-art's 181×147 box here. Both layers then render from one
+// identical viewBox and cannot drift apart at any size.
+//
+// The transform is measured, not eyeballed. design/ufo_original.svg is the original
+// composite (fill + linework together); rendering it and comparing the bounding box of
+// its colour regions against the bounding box of its outline gives where the fill sits
+// relative to the linework. Mapping that ratio onto ufo_lines.svg's own box yields
+// translate(7.77, 19.51) scale(3.415). Regenerate with scripts/solve-ufo-fill.mjs.
+//
+// The previous version stretched the 49×35 fill to fill a 1.23-aspect box and nudged it
+// down 5% in CSS, which distorted it and left a pale gap between dome and disc.
 //
 // Section → path mapping (confirmed against the artwork):
 //   top    = the dome (has the little window marks)
 //   middle = the wide saucer disc
 //   bottom = the underside sliver
+const FILL_TRANSFORM = "translate(7.77 19.51) scale(3.415)";
 const MIDDLE_PATH =
   "M48.22 22.3706C48.02 24.8106 45.18 26.4206 43.16 27.2506C38.24 29.2706 30.45 29.9706 25.1 30.3106C24.4 30.3506 23.82 30.3506 23.12 30.3106C18.91 30.0406 14.79 29.6706 10.64 28.8406C7.3 28.1706 0.48 26.4806 0 22.3706C0.04 19.7706 2.37 17.3706 4.01 15.3906C6.99 17.2206 10.96 17.8106 14.37 18.3206C17.63 18.6706 20.8 18.9706 24.11 18.9706C27.42 18.9706 30.58 18.6706 33.85 18.3206C37.26 17.8206 41.23 17.2306 44.21 15.3906C45.85 17.3706 48.18 19.7706 48.22 22.3706Z";
 const TOP_PATH =
@@ -28,12 +40,15 @@ export default function Ufo({ colors = UFO_DEFAULT, size = 64, className = "" })
       aria-hidden="true">
       <svg
         className="ufo__fill"
-        viewBox="0 0 49 35"
+        viewBox="0 0 181 147"
         fill="none"
         xmlns="http://www.w3.org/2000/svg">
-        <path d={MIDDLE_PATH} fill={colors.middle} />
-        <path d={TOP_PATH} fill={colors.top} />
-        <path d={BOTTOM_PATH} fill={colors.bottom} />
+        <g transform={FILL_TRANSFORM}>
+          {/* Order matters: the dome overlaps the top of the disc and must paint over it. */}
+          <path d={MIDDLE_PATH} fill={colors.middle} />
+          <path d={TOP_PATH} fill={colors.top} />
+          <path d={BOTTOM_PATH} fill={colors.bottom} />
+        </g>
       </svg>
       <img className="ufo__lines" src="/images/community/ufo_lines.svg" alt="" />
     </span>
