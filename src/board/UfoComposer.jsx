@@ -19,18 +19,25 @@ const SAVE_ERRORS = {
 // Two-phase flow:
 //   compose  — write the message + tint the three UFO sections
 //   placing  — the UFO flies up automatically, then the visitor drags it home
+/**
+ * @param {{
+ *   onPlaced: (row: import('./boardApi.js').BoardMessage) => void,
+ *   onCancel: () => void,
+ * }} props
+ */
 export default function UfoComposer({ onPlaced, onCancel }) {
   const [step, setStep] = useState("compose");
   const [text, setText] = useState("");
   const [colors, setColors] = useState(UFO_DEFAULT);
-  const [openSeg, setOpenSeg] = useState(null);
+  const [openSeg, setOpenSeg] = useState(/** @type {string | null} */ (null));
 
   const [pos, setPos] = useState({ x: 0.5, y: 1.25 }); // starts below the board
   const [flying, setFlying] = useState(true); // fly-up transition on; off while dragging
   const [grabbed, setGrabbed] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState(null);
+  const [saveError, setSaveError] = useState(/** @type {string | null} */ (null));
 
+  /** @type {import('react').RefObject<HTMLDivElement | null>} */
   const layerRef = useRef(null);
   const draggingRef = useRef(false);
   const grabOffsetRef = useRef({ x: 0, y: 0 });
@@ -46,7 +53,8 @@ export default function UfoComposer({ onPlaced, onCancel }) {
   };
 
   const pointerFrac = (e) => {
-    const r = layerRef.current.getBoundingClientRect();
+    // Callers all guard on layerRef.current; this runs only while the layer is up.
+    const r = /** @type {HTMLDivElement} */ (layerRef.current).getBoundingClientRect();
     return { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height };
   };
 

@@ -29,7 +29,10 @@ export default function MissionBoard({ adminKey }) {
   const { admin, exitAdmin } = useAdminMode(adminKey);
 
   const [composing, setComposing] = useState(false);
-  const [active, setActive] = useState(null); // placed UFO whose message modal is open
+  // placed UFO whose message modal is open
+  const [active, setActive] = useState(
+    /** @type {import('./boardApi.js').BoardMessage | null} */ (null)
+  );
   const [deleteFailed, setDeleteFailed] = useState(false);
 
   const handlePlaced = (row) => {

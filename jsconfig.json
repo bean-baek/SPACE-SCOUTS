@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    // Deliberately not full `strict`. noImplicitAny on an untyped JS codebase reports
+    // ~200 "this parameter has no annotation" notes, which is a description of the
+    // language, not a list of defects — and the signal drowns. strictNullChecks is the
+    // one that actually finds bugs here, so it stays on.
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "checkJs": true,
+    "allowJs": true,
+    "noEmit": true,
+    "types": ["vite/client"],
+    "skipLibCheck": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "functions", "tests"]
+}

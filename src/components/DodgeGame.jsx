@@ -8,15 +8,23 @@ import "./DodgeGame.css";
 // lifecycle. It deliberately holds no per-frame state — the live timer is written
 // straight into the DOM from the loop, so a running game triggers zero re-renders.
 export default function DodgeGame() {
+  /** @type {import('react').RefObject<HTMLCanvasElement | null>} */
   const canvasRef = useRef(null);
+  /** @type {import('react').RefObject<ReturnType<typeof createDodgeGame> | null>} */
   const gameRef = useRef(null);
+  /** @type {import('react').RefObject<HTMLElement | null>} */
   const timeRef = useRef(null);
+  /** @type {import('react').RefObject<HTMLElement | null>} */
   const labelRef = useRef(null);
 
-  const [assets, setAssets] = useState(null);
+  const [assets, setAssets] = useState(
+    /** @type {Record<string, HTMLImageElement> | null} */ (null)
+  );
   const [status, setStatus] = useState("loading"); // loading | ready | playing | over | clear
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
+  const [result, setResult] = useState(
+    /** @type {{ status: string, time: number } | null} */ (null)
+  );
+  const [error, setError] = useState(/** @type {string | null} */ (null));
 
   useEffect(() => {
     let cancelled = false;

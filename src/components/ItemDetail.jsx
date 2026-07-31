@@ -45,7 +45,9 @@ export default function ItemDetail({ subId, itemId, option, color }) {
         <div className="panel__label">OPTIONS</div>
         <div
           className="chips"
-          style={{ "--chip-cols": chipColumns(item.options.length) }}
+          style={/** @type {import("react").CSSProperties} */ ({
+            "--chip-cols": chipColumns(item.options.length),
+          })}
         >
           {item.options.map((o) => (
             <button

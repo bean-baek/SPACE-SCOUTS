@@ -25,6 +25,37 @@
 // renders as its own paragraph (blank line between them). Use "\n" inside
 // a string for a line break within a paragraph.
 // ============================================================
+/**
+ * One purchasable/collectable thing shown in a grid and on a detail page.
+ *
+ * @typedef {object} Item
+ * @property {string}   id       Also the photo filename stem, per the convention above.
+ * @property {string}   name
+ * @property {string[]} options  Chip labels. Each becomes its own grid tile.
+ * @property {string}   meta      Small print under the title.
+ * @property {string}   image     Fallback photo for options without their own.
+ * @property {Record<string, string | string[]>} [images]
+ *   Per-option photo. An array (e.g. [front, back]) renders a swipeable carousel.
+ * @property {string | string[]} desc  One paragraph, or one entry per paragraph.
+ */
+
+/**
+ * @typedef {object} Subcategory
+ * @property {string}  id
+ * @property {string}  label
+ * @property {boolean} [live]  When false/absent the menu routes to #/soon instead.
+ * @property {"pink" | "blue" | "yellow" | "lime" | "khaki"} color
+ */
+
+/**
+ * @typedef {object} Category
+ * @property {string} id
+ * @property {string} label
+ * @property {Subcategory[]} subcategories  Empty means the heading itself navigates.
+ * @property {string} [link]  Where an empty category goes. Defaults to #/soon.
+ */
+
+/** @type {{ categories: Category[], items: Record<string, Item[]> }} */
 export const DATA = {
   categories: [
     {
@@ -410,12 +441,21 @@ export const DATA = {
 // own photo, otherwise the item's default `image`. Either may be one path or an
 // array (front/back), so callers always get an array — empty when there is no
 // photo at all, which is what makes Tile fall back to the grey placeholder.
+/**
+ * @param {Item} item
+ * @param {string} [option]
+ * @returns {string[]} possibly empty — that is what makes Tile show its placeholder
+ */
 export function resolveImages(item, option) {
   const raw = (option !== undefined ? item.images?.[option] : undefined) ?? item.image;
   if (Array.isArray(raw)) return raw;
   return raw ? [raw] : [];
 }
 
+/**
+ * @param {string} subId
+ * @returns {{ cat: Category, sub: Subcategory } | null}
+ */
 export function findSubcategory(subId) {
   for (const cat of DATA.categories) {
     const sub = cat.subcategories.find((s) => s.id === subId);

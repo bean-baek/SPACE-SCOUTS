@@ -15,15 +15,17 @@ import {
  * couldn't reach the board" — the two used to look identical.
  *
  * @returns {{
- *   ufos: object[],
+ *   ufos: import('./boardApi.js').BoardMessage[],
  *   loadFailed: boolean,
  *   mine: Set<string>,
- *   addUfo: (row: object) => void,
+ *   addUfo: (row: import('./boardApi.js').BoardMessage) => void,
  *   removeUfo: (id: string) => void,
  * }}
  */
 export function useBoardMessages() {
-  const [ufos, setUfos] = useState([]);
+  const [ufos, setUfos] = useState(
+    /** @type {import('./boardApi.js').BoardMessage[]} */ ([])
+  );
   const [loadFailed, setLoadFailed] = useState(false);
   const [mine, setMine] = useState(() => getMineIds()); // ids this browser can delete
 

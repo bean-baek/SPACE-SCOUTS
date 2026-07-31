@@ -3,7 +3,7 @@ import { DATA } from "../data.js";
 import { go } from "../hooks/useHashRoute.js";
 
 export default function Menu() {
-  const [openId, setOpenId] = useState(null);
+  const [openId, setOpenId] = useState(/** @type {string | null} */ (null));
   return (
     <section className="menu">
       {DATA.categories.map((cat) => {

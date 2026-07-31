@@ -5,7 +5,7 @@ import Ufo from "./Ufo.jsx";
  * class names are unchanged, since the board's styling depends on them.
  *
  * @param {{
- *   message: object,
+ *   message: import('./boardApi.js').BoardMessage,
  *   canDelete: boolean,
  *   deleteFailed: boolean,
  *   onDelete: (id: string) => void,
