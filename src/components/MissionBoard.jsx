@@ -15,7 +15,8 @@ import "./MissionBoard.css";
 // Star positions, extracted from the design SVGs and expressed as % of the board
 // (center-anchored) + width as % of board width. Placing individual star.svg copies this
 // way lands them exactly like the reference at any size — unlike a full-bleed field, which
-// object-fit:cover would crop and shift. Top group = bg_star.svg, lower group = more_stars.svg.
+// object-fit:cover would crop and shift. Top group = design/bg_star.svg, lower group =
+// design/more_stars.svg (kept as design references only; neither is loaded at runtime).
 const STARS = [
   { left: 18, top: 15, w: 28 }, // big, upper-left
   { left: 76, top: 6, w: 16 }, // upper-right (below title)

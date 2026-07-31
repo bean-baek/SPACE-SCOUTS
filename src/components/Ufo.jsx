@@ -1,5 +1,5 @@
 // Recolorable UFO. The three fill paths come straight from
-// public/images/community/ufo_color.svg (viewBox 49×35) — each one is a section the
+// design/ufo_color.svg (viewBox 49×35) — each one is a section the
 // visitor can tint. The blue line-art (ufo_lines.svg, viewBox 53×43, with antennae and
 // windows) is laid over the top, static. The two source files have different boxes, so
 // the fill SVG is inset onto the saucer region of the outline; that inset (in .ufo__fill,

@@ -92,8 +92,8 @@ export default function App() {
 
   return (
     <div className="phone">
-      {/* The board has its own starfield (bg_star.svg); skip the global sparkle overlay
-          there so the two star layers don't stack. */}
+      {/* The board draws its own starfield (individually placed star.svg copies); skip
+          the global sparkle overlay there so the two star layers don't stack. */}
       {route.view !== "board" && (
         <img className="sparkles" src="/images/sparkle.png" alt="" aria-hidden="true" />
       )}

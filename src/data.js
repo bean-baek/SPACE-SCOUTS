@@ -243,7 +243,7 @@ export const DATA = {
         name: "[U] ACRYLIC KEYRING",
         options: ["괴물", "똥", "대장", "펫"],
         meta: "랜덤 보급품 · 아크릴 키링 4종",
-        image: "/items/acrylic-keyring_괴물.png",
+        image: "/items/acrylic-keyring_captain.png",
         images: {
           괴물: "/items/acrylic-keyring_monster.png",
           똥: "/items/acrylic-keyring_poop.png",
