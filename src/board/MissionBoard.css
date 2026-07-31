@@ -313,6 +313,13 @@
   cursor: grab;
   touch-action: none;
   filter: drop-shadow(0 2px 2px rgba(58, 57, 255, 0.22));
+  /* Load-bearing on iOS Safari, not a micro-optimisation. This element carries a
+     drop-shadow while left/top change on every pointermove, and Safari's tiled
+     renderer fails to invalidate the tiles the filtered pixels just left — the drag
+     smears a soft banded trail behind the UFO. will-change forces its own compositor
+     layer, so the shadow rasterises once and the layer is merely translated after
+     that. Purely a rendering hint: no effect on layout, paint order or geometry. */
+  will-change: transform, filter;
   transition:
     transform 0.16s ease,
     filter 0.16s ease;
