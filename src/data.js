@@ -101,7 +101,10 @@ export const DATA = {
       id: "training-center",
       label: "TRAINING CENTER",
       // The dodge mini-game. Fully client-side, no backend.
-      link: "#/game",
+      // Unlinked on purpose while it's still being play-tested: the route at
+      // #/game stays live, but nothing in the UI points at it, so the menu falls
+      // through to #/soon. Restore the line below to launch it.
+      // link: "#/game",
       subcategories: [],
     },
   ],
