@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { SEED_SCRIPT, BOARD_ROWS, MINE_MAP } from "./seed.js";
+import { BOSS_HP, PHASE1_END } from "../src/game/dodgeEngine.js";
 
 // Visual baseline. Run `npx playwright test` before a refactor phase to record,
 // and after it to prove nothing moved. A failure here is a real visual diff —
@@ -94,11 +95,16 @@ test("game ready overlay @mobile", async ({ page }) => {
   await page.setViewportSize(MOBILE);
   await open(page, "#/game");
   await expect(page.getByRole("button", { name: "START" })).toBeVisible();
-  // Assert the tuning numbers as text, not pixels. Both are two digits, so changing
-  // one alters a single glyph — far fewer pixels than maxDiffPixelRatio allows, and
-  // the screenshot below silently passed on a real BOSS_HP change until this existed.
-  await expect(page.locator(".dg-hint")).toContainText("20초 후");
-  await expect(page.locator(".dg-hint")).toContainText("50회 명중");
+  // Assert the tuning numbers as text, not pixels. They are only a glyph or two, so
+  // changing one moves far fewer pixels than maxDiffPixelRatio allows, and the
+  // screenshot below silently passed on a real BOSS_HP change until this existed.
+  //
+  // Read from the engine rather than hard-coding: literals here went stale the first
+  // time the boss was retuned (50 -> 100) and turned an intentional balance change
+  // into a red suite. Importing keeps the check honest about what it actually guards —
+  // that the hint renders the live constants — while surviving future tuning.
+  await expect(page.locator(".dg-hint")).toContainText(`${PHASE1_END}초 후`);
+  await expect(page.locator(".dg-hint")).toContainText(`${BOSS_HP}회 명중`);
   // Shoot the overlay element, NOT the page-with-canvas-masked. .dg-canvas is
   // full-bleed, so masking it painted a solid pink rectangle over the entire
   // viewport — overlay included — and this assertion covered nothing at all for as

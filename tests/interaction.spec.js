@@ -128,20 +128,33 @@ test("clampY reserves the CTA strip at any board height", () => {
   expect(clampY(0, 768)).toBe(0.05);
 });
 
-test("top-level menu entries reach the game and the board", async ({ page }) => {
+test("MISSION REPORTS reaches the board", async ({ page }) => {
   await page.setViewportSize({ width: 402, height: 874 });
-
-  await page.goto("/#/menu");
-  await page.reload();
-  await page.getByRole("button", { name: "TRAINING CENTER" }).click();
-  await expect(page).toHaveURL(/#\/game/);
-  await expect(page.locator(".dg-root")).toBeVisible();
 
   await page.goto("/#/menu");
   await page.reload();
   await page.getByRole("button", { name: "MISSION REPORTS" }).click();
   await expect(page).toHaveURL(/#\/board/);
   await expect(page.locator(".board")).toBeVisible();
+});
+
+// The dodge game is deliberately unlisted while it is being play-tested: the route
+// stays live so it can be opened directly, but no UI element points at it, so
+// TRAINING CENTER falls through to #/soon. Both halves matter — dropping the link
+// without keeping the route reachable would strand the game entirely, and this is
+// what would catch it being re-linked by accident before launch.
+test("the game is reachable by URL but unlisted in the menu", async ({ page }) => {
+  await page.setViewportSize({ width: 402, height: 874 });
+
+  await page.goto("/#/game");
+  await page.reload();
+  await expect(page.locator(".dg-root")).toBeVisible();
+
+  await page.goto("/#/menu");
+  await page.reload();
+  await page.getByRole("button", { name: "TRAINING CENTER" }).click();
+  await expect(page).toHaveURL(/#\/soon/);
+  await expect(page.locator(".dg-root")).toHaveCount(0);
 });
 
 test("game over shows the dizzy face, not the happy one", async ({ page }) => {
