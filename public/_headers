@@ -1,0 +1,45 @@
+# Cloudflare Pages response headers.
+#
+# Vite copies public/ verbatim into dist/, so this ships as dist/_headers, which is
+# where Pages looks for it. It is inert under `npm run dev` and `vite preview` — only
+# the Pages runtime reads it, so verify changes with `npx wrangler pages dev dist`.
+#
+# Every source in the CSP below was derived by recording real requests across all seven
+# routes, not guessed. Adding an external script, font, or API host means adding it here
+# too, or the browser will block it.
+
+/*
+  # The site frames nothing and should never be framed — this is the clickjacking
+  # defence. frame-ancestors is the modern form; X-Frame-Options is kept for older
+  # browsers that ignore CSP.
+  X-Frame-Options: DENY
+
+  # Cloudflare already sends nosniff and a referrer policy by default. They are
+  # restated so the policy is visible in the repo rather than implied by a default
+  # that could change.
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # No feature here needs any of these. Denying them means a future dependency cannot
+  # quietly start asking.
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+
+  # script-src 'self' is the directive that matters: the production build emits exactly
+  # one <script src>, zero inline scripts, so an injected <script> or on* handler cannot
+  # execute. Verified against dist/index.html.
+  #
+  # style-src needs 'unsafe-inline' and that is not negotiable: React writes inline
+  # style attributes (the chip grid's --chip-cols, the board's per-UFO colours) and
+  # react-colorful builds its picker the same way. Inline *styles* cannot execute code,
+  # so this is a far weaker concession than it would be for scripts.
+  #
+  # img-src allows data: because a blocked image degrades silently into a layout change,
+  # and data: images cannot execute. connect-src 'self' covers /api/messages; the board
+  # talks to no other origin.
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+
+# Vite fingerprints everything in assets/ by content, so a changed file is a changed
+# URL and these can never go stale. Anything else in public/ (images, video, og-image)
+# keeps its filename across deploys and must NOT be immutable.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
