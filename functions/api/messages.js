@@ -28,6 +28,21 @@ const json = (data, status = 200) =>
 // Hashing the IP with a server-side salt gives a stable key that cannot be reversed
 // into an address, and RATE_SALT being a secret is what stops it being brute-forced
 // (the IPv4 space is small enough to enumerate against an unsalted hash).
+// Secret comparison that takes the same time whether the first byte differs or the
+// last. `a === b` bails at the first mismatched character, so the time it takes to say
+// "no" reveals how much of the prefix was right — enough, over many requests, to
+// recover a token or the admin key a character at a time. Lengths are compared first
+// (that much is unavoidable and harmless: both secrets are fixed-length and random).
+function secretsMatch(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const left = new TextEncoder().encode(a);
+  const right = new TextEncoder().encode(b);
+  if (left.length !== right.length) return false;
+  let diff = 0;
+  for (let i = 0; i < left.length; i++) diff |= left[i] ^ right[i];
+  return diff === 0;
+}
+
 async function clientKey(request, env) {
   const ip = request.headers.get("CF-Connecting-IP") || "";
   const salt = env.RATE_SALT || "space-scouts-unsalted";
@@ -111,7 +126,7 @@ export async function onRequestDelete({ request, env }) {
 
   // Admin override: the owner sets ADMIN_KEY as an encrypted env secret (never in the
   // repo). When present and matching, it authorises deleting ANY row — that's moderation.
-  const isAdmin = Boolean(env.ADMIN_KEY) && adminKey === env.ADMIN_KEY;
+  const isAdmin = Boolean(env.ADMIN_KEY) && secretsMatch(adminKey, env.ADMIN_KEY);
 
   try {
     if (!isAdmin) {
@@ -120,7 +135,9 @@ export async function onRequestDelete({ request, env }) {
         .bind(id)
         .first();
       if (!row) return json({ error: "not found" }, 404);
-      if (!token || token !== row.token) return json({ error: "forbidden" }, 403);
+      if (!token || !secretsMatch(token, row.token)) {
+        return json({ error: "forbidden" }, 403);
+      }
     }
 
     await env.DB.prepare("DELETE FROM messages WHERE id = ?").bind(id).run();
