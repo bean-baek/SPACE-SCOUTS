@@ -42,20 +42,45 @@ const ADMIN_KEY = "spacescouts:admin";
 // `wrangler pages dev dist`) set import.meta.env.DEV = false and use the real API.
 const USE_API = !import.meta.env.DEV;
 
+// localStorage is not always available: Safari's private mode throws on write, and any
+// browser throws once the quota is full. Routing every access through one place means
+// that failure mode is handled once instead of being re-guarded at each call site, and
+// the callers below read as plain get/set.
+const storage = {
+  /** @returns {string | null} */
+  get(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  set(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      /* full / unavailable — the caller cannot do anything useful about it */
+    }
+  },
+  remove(key) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      /* as above */
+    }
+  },
+};
+
+// The remaining try/catch guards JSON.parse, not storage: a corrupt value should read
+// as "nothing stored" rather than throw.
 function readJson(key) {
   try {
-    return JSON.parse(localStorage.getItem(key) ?? "null") || null;
+    return JSON.parse(storage.get(key) ?? "null") || null;
   } catch {
     return null;
   }
 }
-function writeJson(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    /* storage full / unavailable — ignore */
-  }
-}
+const writeJson = (key, value) => storage.set(key, JSON.stringify(value));
 
 /** @returns {BoardMessage[]} */
 const readLocal = () => readJson(LS_KEY) || [];
@@ -92,27 +117,9 @@ export function getMineIds() {
 // The admin key is a shared secret the owner holds; the server validates it against its
 // ADMIN_KEY env secret. Stored here only so the owner's browser can send it. It is never
 // validated client-side (the client can't) — a wrong key simply gets a 403 from the API.
-export function getAdminKey() {
-  try {
-    return localStorage.getItem(ADMIN_KEY) || null;
-  } catch {
-    return null;
-  }
-}
-export function setAdminKey(key) {
-  try {
-    localStorage.setItem(ADMIN_KEY, key);
-  } catch {
-    /* ignore */
-  }
-}
-export function clearAdminKey() {
-  try {
-    localStorage.removeItem(ADMIN_KEY);
-  } catch {
-    /* ignore */
-  }
-}
+export const getAdminKey = () => storage.get(ADMIN_KEY) || null;
+export const setAdminKey = (key) => storage.set(ADMIN_KEY, key);
+export const clearAdminKey = () => storage.remove(ADMIN_KEY);
 export const isAdmin = () => Boolean(getAdminKey());
 
 // Dev-only write to the localStorage stand-in.
